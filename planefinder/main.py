@@ -5,6 +5,61 @@ This contains all classes, functions, etc.  in my plane-finder-app
 """
 import attr
 from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import trade_a_plane
+@attr.s
+class Crawler:
+    """
+    Crawls a website collecting pages.
+
+    1. Select an entry website.
+    2. Add a filter to filter nodes.
+    3. Add link following rules.
+    """
+    entry: str = attr.ib(default='')
+    def set_entry(self, url):
+        """
+        Set an entry point for the crawler.
+        """
+        self.entry = url
+    def add_filter(self, filter):
+        """
+        Add a filter on the entry page for HTML to collect.
+        """
+    def read_page(self, url) -> BeautifulSoup:
+        """
+        Read a web page and do something.
+        """
+        response = requests.get(url)
+        soup = BeautifulSoup(response)
+        return soup
+    def save_page(self, page: soup):
+        """
+        Save a page for later retrieval
+        """
+    def run(self):
+        """
+        Crawl a website.
+
+        DEVELOPMENT
+        Currently limited to crawling only the first entry.
+        """
+        if self.entry == '':
+            raise Exception('`entry` must be set before running.')
+        soup = self.read_page(self.entry)
+        listing_entries = soup.find_all(trade_a_plane.is_listing_result)
+        # Iterate through entries
+        for init_listing in listing_entries:
+            # Save entry HTML
+            # Collect some information from the initial entry
+                # 
+            # HTTP get detail page
+            # Save detail page
+            # Collect information from detail pages
+            # Next entry
+
+
 @attr.s
 class AircraftSaleEntry:
     """
@@ -14,7 +69,9 @@ class AircraftSaleEntry:
     aircraft sales entries. I want to record what is for sale, when, and for
     how much.
     """
+    id: int = attr.ib()
     url: str = attr.ib()
+    seller_id: int = attr.ib()
     make_model: str = attr.ib()
     price: float = attr.ib()
     registration: str = attr.ib()

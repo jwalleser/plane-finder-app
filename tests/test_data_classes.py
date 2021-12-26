@@ -2,7 +2,12 @@ from datetime import datetime
 from planefinder.main import AircraftSaleEntry
 
 def test_aircraft_sale_entry():
-    AircraftSaleEntry(url='https://www.trade-a-plane.com/search?category_level1=Single+Engine+Piston&make=CESSNA&model=182Q+SKYLANE&listing_id=2400626&s-type=aircraft',
+    """
+    Tests whether an AircraftSaleEntry can be created.
+    """
+    AircraftSaleEntry(id=2399126,
+                    url='https://www.trade-a-plane.com/search?category_level1=Single+Engine+Piston&make=CESSNA&model=182Q+SKYLANE&listing_id=2400626&s-type=aircraft',
+                    seller_id=49743,
                     price=15000,
                     make_model='CESSNA 182Q SKYLANE',
                     registration='N735GS',
