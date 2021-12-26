@@ -34,7 +34,7 @@ class Crawler:
         response = requests.get(url)
         soup = BeautifulSoup(response)
         return soup
-    def save_page(self, page: soup):
+    def save_page(self, page: BeautifulSoup):
         """
         Save a page for later retrieval
         """
@@ -58,6 +58,7 @@ class Crawler:
             # Save detail page
             # Collect information from detail pages
             # Next entry
+            raise NotImplementedError('Need to implement this block.')
 
 
 @attr.s
