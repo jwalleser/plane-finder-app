@@ -37,6 +37,13 @@ class Crawler:
     def save_page(self, page: BeautifulSoup):
         """
         Save a page for later retrieval
+        
+        I do not know what I mean by save. Save the raw HTML? Save the 
+        BeautifulSoup object? What do I want to save and why? Such a save
+        operation implies its reciprocal, `load_page`.
+        
+        Consider adding some additional metadata such as date crawled to this
+        saved object.
         """
     def run(self):
         """
@@ -48,12 +55,13 @@ class Crawler:
         if self.entry == '':
             raise Exception('`entry` must be set before running.')
         soup = self.read_page(self.entry)
+        self.save_page(soup) # Save the initial entry page.
         listing_entries = soup.find_all(trade_a_plane.is_listing_result)
         # Iterate through entries
         for init_listing in listing_entries:
             # Save entry HTML
             # Collect some information from the initial entry
-                # 
+                
             # HTTP get detail page
             # Save detail page
             # Collect information from detail pages
