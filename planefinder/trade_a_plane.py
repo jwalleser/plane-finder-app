@@ -31,19 +31,37 @@ def listing_id(node: Tag):
     Parameters
     ----------
     node: Tag
-        A result_listing node.
+        A `result_listing` node.
     """
-    return node.attrs['data-listing_id']
+    try:
+        return node.attrs['data-listing_id']
+    except KeyError:
+        print('Available attributes are: {}'.format(node.attrs))
+        raise
 
-def seller_id(node):
+def seller_id(node: Tag) -> str:
     """
     Get seller id from a node.
+
+    Parameters
+    ----------
+    node: Tag
+        A `result_listing` node
+    Returns
+    -------
+    seller_id: str
+        The seller ID, as a string
     """
     return node.attrs['data-seller_id']
 
 def last_update(node: Tag) -> datetime:
     """
     Get last update according to Trade-a-Plane
+
+    Parameters
+    ----------
+    node: Tag
+        A `result_listing` node
     """
     update_node = node.find(name='p', class_='last-update')
     pattern = r'\d{2}/\d{2}/\d{4}'

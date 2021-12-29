@@ -7,7 +7,7 @@ import attr
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-import trade_a_plane
+from planefinder import trade_a_plane
 @attr.s
 class Crawler:
     """

@@ -1,5 +1,8 @@
+from pathlib import Path
 from datetime import datetime
 from planefinder.main import AircraftSaleEntry
+from planefinder import trade_a_plane
+from bs4 import BeautifulSoup
 
 def test_aircraft_sale_entry():
     """
@@ -15,3 +18,18 @@ def test_aircraft_sale_entry():
                     search_date=datetime(2021, 12, 12, 11, 53),
                     ttaf=0,
                     smoh=0)
+
+def test_read_entry_from_html():
+    """
+    Read
+    """
+    this_dir = Path(__file__).parent
+    test_listing = this_dir.joinpath('single-result-listing.html')
+    with open(test_listing) as f:
+        html = f.read()
+    soup = BeautifulSoup(html, features='html.parser')
+    listing = soup.find(trade_a_plane.is_listing_result)
+    # Parsed values equal expected values
+    assert trade_a_plane.listing_id(listing) == '2399126'
+    assert trade_a_plane.seller_id(listing) == '49743'
+    assert trade_a_plane.last_update(listing) == datetime(2021, 11, 9)
