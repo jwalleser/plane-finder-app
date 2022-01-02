@@ -36,10 +36,13 @@ def test_read_entry_from_html():
     test_details = this_dir.joinpath('aircraft-detail.html')
     with open(test_details) as f:
         html = f.read()
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, features='html.parser')
     # make_model CESSNA 182Q SKYLANE
+    assert trade_a_plane.make_model(soup) == 'CESSNA 182Q SKYLANE'
     # price 250000
+    assert trade_a_plane.price(soup) == 250000
     # registration N7574S
+    assert trade_a_plane.registration(soup) == 'N7574S'
     # description
     expected_description = """*News Alert* High demand highly desirable Q model has hit the market!!! 
 
@@ -70,4 +73,6 @@ Thanks for your interest.
 
 
 Aircraft Location: GYI"""
+    assert trade_a_plane.description(soup) == expected_description
     # ttaf
+    assert trade_a_plane.ttaf(soup) == 3388

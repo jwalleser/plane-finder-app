@@ -152,11 +152,17 @@ def smoh(node: Tag):
     """
     spec_list = _general_specs(node)
 def _text_after_colon_and_strip(text: str):
-    pattern = r':(.+$)'
-    result = re.search(pattern, text)
-    if result is None:
-        return ''
-    return result.group(1).strip()
+    """
+    Get the text after a colon and strip white spaces
+
+    Intended to get data after a colon. Normalize to remove extra whitespaces.
+    """
+    multiple_whitespace = r'\s+'
+    normalized =  re.sub(multiple_whitespace, ' ', text).strip()
+    # Find the text after the colon and trim
+    after_colon_pattern = r':(.*)$'
+    target_match = re.search(after_colon_pattern, normalized)
+    return target_match.group(1).strip()
 
 def _general_specs(node: Tag) -> List[str]:
     """
