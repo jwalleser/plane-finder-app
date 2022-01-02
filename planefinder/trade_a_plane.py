@@ -146,11 +146,16 @@ def ttaf(node: Tag):
             return float(tokens[1])
     return -1
 
-def smoh(node: Tag):
+def engine_time(node: Tag) -> str:
     """
-    Get time since major overhaul from a node.
+    Get engine time and type, SMOH, TTSN, factory overhaul.
     """
     spec_list = _general_specs(node)
+    for spec in spec_list:
+        tokens = spec.split(':')
+        if tokens[0].strip().lower() == 'engine 1 time':
+            return tokens[1].strip()
+    return ''
 def _text_after_colon_and_strip(text: str):
     """
     Get the text after a colon and strip white spaces

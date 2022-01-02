@@ -76,3 +76,4 @@ Aircraft Location: GYI"""
     assert trade_a_plane.description(soup) == expected_description
     # ttaf
     assert trade_a_plane.ttaf(soup) == 3388
+    assert trade_a_plane.engine_time(soup) == '271 SMOH'
