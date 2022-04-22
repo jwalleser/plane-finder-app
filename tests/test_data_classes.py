@@ -1,5 +1,5 @@
 from datetime import datetime
-from planefinder.main import AircraftSaleEntry
+from planefinder.data import AircraftSaleEntry
 
 def test_aircraft_sale_entry():
     """
@@ -15,3 +15,6 @@ def test_aircraft_sale_entry():
                     search_date=datetime(2021, 12, 12, 11, 53),
                     ttaf=0,
                     smoh=0)
+
+class TestCrawler():
+    
