@@ -11,6 +11,7 @@ class AircraftSaleEntry:
     aircraft sales entries. I want to record what is for sale, when, and for
     how much.
     """
+
     id: int = attr.ib()
     url: str = attr.ib()
     seller_id: int = attr.ib()
