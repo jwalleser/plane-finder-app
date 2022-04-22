@@ -6,7 +6,7 @@ This contains all classes, functions, etc.  in my plane-finder-app
 import attr
 from datetime import datetime
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 import trade_a_plane
 @attr.s
 class Crawler:
@@ -67,3 +67,7 @@ class Crawler:
             # Collect information from detail pages
             # Next entry
             raise NotImplementedError('Need to implement this block.')
+
+class PlaneListings:
+    def __init__(self, listing_results: ResultSet):
+        self.listing_results = listing_results

@@ -17,4 +17,4 @@ def test_aircraft_sale_entry():
                     smoh=0)
 
 class TestCrawler():
-    
+    pass
