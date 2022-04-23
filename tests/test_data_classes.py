@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 from planefinder.data import AircraftSaleEntry
 from planefinder import trade_a_plane
+from tests import utils
 from bs4 import BeautifulSoup
 
 def test_aircraft_sale_entry():
@@ -25,9 +26,7 @@ def test_read_entry_from_html():
     """
     this_dir = Path(__file__).parent
     test_listing = this_dir.joinpath('single-result-listing.html')
-    with open(test_listing) as f:
-        html = f.read()
-    soup = BeautifulSoup(html, features='html.parser')
+    soup = utils.read_html_into_soup(test_listing)
     listing = soup.find(trade_a_plane.is_listing_result)
     # Parsed values equal expected values
     assert trade_a_plane.listing_id(listing) == '2399126'
@@ -37,13 +36,9 @@ def test_read_entry_from_html():
     with open(test_details) as f:
         html = f.read()
     soup = BeautifulSoup(html, features='html.parser')
-    # make_model CESSNA 182Q SKYLANE
     assert trade_a_plane.make_model(soup) == 'CESSNA 182Q SKYLANE'
-    # price 250000
     assert trade_a_plane.price(soup) == 250000
-    # registration N7574S
     assert trade_a_plane.registration(soup) == 'N7574S'
-    # description
     expected_description = """*News Alert* High demand highly desirable Q model has hit the market!!! 
 
 
@@ -74,6 +69,5 @@ Thanks for your interest.
 
 Aircraft Location: GYI"""
     assert trade_a_plane.description(soup) == expected_description
-    # ttaf
     assert trade_a_plane.ttaf(soup) == 3388
     assert trade_a_plane.engine_time(soup) == '271 SMOH'
