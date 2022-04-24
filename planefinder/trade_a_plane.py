@@ -35,10 +35,11 @@ def listing_id(node: Tag):
         A `result_listing` node.
     """
     try:
-        return node.attrs['data-listing_id']
+        return node.attrs["data-listing_id"]
     except KeyError:
-        print('Available attributes are: {}'.format(node.attrs))
+        print("Available attributes are: {}".format(node.attrs))
         raise
+
 
 def seller_id(node: Tag) -> str:
     """
@@ -68,9 +69,14 @@ def last_update(node: Tag) -> datetime:
     update_node = node.find(name="p", class_="last-update")
     pattern = r"\d{2}/\d{2}/\d{4}"
     search_result = re.search(pattern, update_node.text).group(0)
-    date_fmt = '%m/%d/%Y'
+    date_fmt = "%m/%d/%Y"
     date_ = datetime.strptime(search_result, date_fmt)
-    return date_
+    return date_.date()
+
+
+def detail_page_url(node: Tag) -> str:
+    description_node = node.find(name="p", class_="description")
+    return description_node.find(name="a").attrs["href"]
 
 
 def make_model(node: Tag):
@@ -90,13 +96,14 @@ def make_model(node: Tag):
         Make/Model text or 'Unknown' if not found. Example: Cessna 182 Q Skylane.
     """
     # Get model node, <li class="makeModel">
-    model_node = node.find(name='li', class_='makeModel')
+    model_node = node.find(name="li", class_="makeModel")
     model_text = model_node.text
     # Capture model text, everything after the last colon, stripped of spaces
     processed_model = _text_after_colon_and_strip(model_text)
-    if processed_model == '':
-        processed_model = 'Unknown'
+    if processed_model == "":
+        processed_model = "Unknown"
     return processed_model
+
 
 def price(node: Tag) -> float:
     """
@@ -112,6 +119,7 @@ def price(node: Tag) -> float:
         raise ValueError('Expected to find a <span itemprop="price"> tag')
     return float(price_text)
 
+
 def registration(node: Tag) -> str:
     """
     Get registration (N-number) from a node.
@@ -121,11 +129,12 @@ def registration(node: Tag) -> str:
     node: Tag
         Tag from detail page. Expect info in <li class="reg-number">
     """
-    reg_txt = node.find(name='li', class_='reg-number').text
-    reg =_text_after_colon_and_strip(reg_txt)
-    if reg == '':
-        reg = 'Unknown'
+    reg_txt = node.find(name="li", class_="reg-number").text
+    reg = _text_after_colon_and_strip(reg_txt)
+    if reg == "":
+        reg = "Unknown"
     return reg
+
 
 def description(node: Tag) -> str:
     """
@@ -142,7 +151,8 @@ def description(node: Tag) -> str:
     text: str
         Text as provided by seller
     """
-    return node.find(id='detailed_desc').find(itemprop='description').text
+    return node.find(id="detailed_desc").find(itemprop="description").text
+
 
 def ttaf(node: Tag):
     """
@@ -150,10 +160,11 @@ def ttaf(node: Tag):
     """
     spec_list = _general_specs(node)
     for spec in spec_list:
-        tokens = spec.split(':')
-        if tokens[0].strip().lower() == 'total time':
+        tokens = spec.split(":")
+        if tokens[0].strip().lower() == "total time":
             return float(tokens[1])
     return -1
+
 
 def engine_time(node: Tag) -> str:
     """
@@ -161,20 +172,22 @@ def engine_time(node: Tag) -> str:
     """
     spec_list = _general_specs(node)
     for spec in spec_list:
-        tokens = spec.split(':')
-        if tokens[0].strip().lower() == 'engine 1 time':
+        tokens = spec.split(":")
+        if tokens[0].strip().lower() == "engine 1 time":
             return tokens[1].strip()
-    return ''
+    return ""
+
+
 def _text_after_colon_and_strip(text: str):
     """
     Get the text after a colon and strip white spaces
 
     Intended to get data after a colon. Normalize to remove extra whitespaces.
     """
-    multiple_whitespace = r'\s+'
-    normalized =  re.sub(multiple_whitespace, ' ', text).strip()
+    multiple_whitespace = r"\s+"
+    normalized = re.sub(multiple_whitespace, " ", text).strip()
     # Find the text after the colon and trim
-    after_colon_pattern = r':(.*)$'
+    after_colon_pattern = r":(.*)$"
     target_match = re.search(after_colon_pattern, normalized)
     return target_match.group(1).strip()
 
@@ -183,6 +196,8 @@ def smoh(node):
     """
     Get time since major overhaul from a node.
     """
+
+
 def _general_specs(node: Tag) -> List[str]:
     """
     Parameters
@@ -204,13 +219,14 @@ def _general_specs(node: Tag) -> List[str]:
                   Flight Rules:IFR,
                   # of Seats:4]
     """
-    general_specs = node.find(id='general_specs')
+    general_specs = node.find(id="general_specs")
     if general_specs is None:
         return []
-    spec_paragraphs = general_specs.find_all(name='p')
+    spec_paragraphs = general_specs.find_all(name="p")
     if spec_paragraphs is None:
         return []
     return [general_spec_node.text for general_spec_node in spec_paragraphs]
+
 
 def _spec_from_colon_separated_text_list(spec_name: str):
     """

@@ -3,11 +3,16 @@ import sys
 
 APP_LOGGER_NAME = "Plane Finder"
 
-def setup_applevel_logger(logger_name: str = APP_LOGGER_NAME, file_name: str=None) -> logging.Logger:
+
+def setup_applevel_logger(
+    logger_name: str = APP_LOGGER_NAME, file_name: str = None
+) -> logging.Logger:
     """Stream logger with optional file logging"""
     logger = logging.getLogger(logger_name)
     logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     sh = logging.StreamHandler(sys.stdout)
     sh.setFormatter(formatter)
     logger.handlers.clear()
@@ -19,5 +24,5 @@ def setup_applevel_logger(logger_name: str = APP_LOGGER_NAME, file_name: str=Non
     return logger
 
 
-def get_logger(module_name: str) -> logging.Logger:    
-   return logging.getLogger(APP_LOGGER_NAME).getChild(module_name)
+def get_logger(module_name: str) -> logging.Logger:
+    return logging.getLogger(APP_LOGGER_NAME).getChild(module_name)
