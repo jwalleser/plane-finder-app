@@ -1,19 +1,21 @@
 from bs4 import BeautifulSoup
 from planefinder import trade_a_plane
-
+from planefinder import utils
 
 class ListingsPage:
-    def __init__(self, page_soup: BeautifulSoup):
-        self.page_soup = page_soup
+    def __init__(self, listing_page_url: str):
+        self.url = listing_page_url
+        self.page_soup = utils.read_html_into_soup(listing_page_url)
 
     @property
     def entries(self):
         for entry_soup in self.page_soup.find_all(trade_a_plane.is_listing_result):
-            yield ListingEntry(entry_soup)
+            yield ListingEntry(self, entry_soup)
 
 
 class ListingEntry:
-    def __init__(self, listing_soup: BeautifulSoup):
+    def __init__(self, listings_page: ListingsPage, listing_soup: BeautifulSoup):
+        self.listings_page = listings_page
         self.listing_soup = listing_soup
 
     @property
@@ -31,6 +33,10 @@ class ListingEntry:
     @property
     def listing_detail(self):
         return ListingDetail()
+
+    @property
+    def detail_url(self):
+        return trade_a_plane.detail_page_url(self.listing_soup)
 
 
 class ListingDetail:

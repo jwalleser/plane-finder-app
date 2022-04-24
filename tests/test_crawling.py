@@ -2,7 +2,7 @@ import datetime
 from pathlib import Path
 from bs4 import BeautifulSoup
 import pytest
-from tests import utils
+from planefinder import utils
 from planefinder.crawler import ListingsPage
 
 
@@ -19,9 +19,10 @@ def test_navigation_from_multiple_listing_page_to_detail_page():
     assert first_listing.seller == known_seller_id
     known_last_update = datetime.date(2022, 4, 1)
     assert first_listing.last_update == known_last_update
+    known_detail_url_part = "/search?category_level1=Single+Engine+Piston&make=CESSNA&model=182T+SKYLANE&listing_id=2403772&s-type=aircraft"
+    assert first_listing.detail_url == known_detail_url_part
 
 
 def multiple_listing_page() -> BeautifulSoup:
     this_dir = Path(__file__).parent
-    listings_page = this_dir.joinpath("listings-page.html")
-    return utils.read_html_into_soup(listings_page)
+    return this_dir.joinpath("listings-page.html")

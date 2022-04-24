@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import datetime, date
 from planefinder.data import AircraftSaleEntry
 from planefinder import trade_a_plane
-from tests import utils
+from planefinder import utils
 from bs4 import BeautifulSoup
 
 
