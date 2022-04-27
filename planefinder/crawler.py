@@ -31,51 +31,56 @@ class ListingEntry:
         return trade_a_plane.last_update(self.listing_soup)
 
     @property
-    def listing_detail(self):
-        return ListingDetail()
+    def detail(self):
+        return ListingDetail(self.detail_url)
 
     @property
     def detail_url(self):
-        return trade_a_plane.detail_page_url(self.listing_soup)
+        absolute_url = str(self.listings_page.url) + trade_a_plane.detail_page_url(self.listing_soup)
+        return absolute_url
 
 
 class ListingDetail:
-    @property
-    def listing_id(self):
-        pass
+    def __init__(self, url):
+        self.url = url
+        self.page_soup = utils.read_html_into_soup(self.url)
 
     @property
+    def listing_id(self, url):
+        return trade_a_plane.listing_id(self.page_soup)
+    
+    @property
     def seller_id(self):
-        pass
+        return trade_a_plane.seller_id(self.page_soup)
 
     @property
     def last_update(self):
-        pass
+        return trade_a_plane.last_update(self.page_soup)
 
     @property
     def make_model(self):
-        pass
+        return trade_a_plane.make_model(self.page_soup)
 
     @property
     def price(self):
-        pass
+        return trade_a_plane.price(self.page_soup)
 
     @property
     def registration(self):
-        pass
+        return trade_a_plane.registration(self.page_soup)
 
     @property
     def description(self):
-        pass
+        return trade_a_plane.description(self.description)
 
     @property
     def ttaf(self):
-        pass
+        return trade_a_plane.ttaf(self.page_soup)
 
     @property
     def engine_time(self):
-        pass
+        return trade_a_plane.engine_time(self.page_soup)
 
     @property
     def smoh(self):
-        pass
+        return trade_a_plane.smoh(self.page_soup)

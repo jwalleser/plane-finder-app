@@ -95,7 +95,6 @@ def make_model(node: Tag):
     processed_model: str
         Make/Model text or 'Unknown' if not found. Example: Cessna 182 Q Skylane.
     """
-    # Get model node, <li class="makeModel">
     model_node = node.find(name="li", class_="makeModel")
     model_text = model_node.text
     # Capture model text, everything after the last colon, stripped of spaces
@@ -196,6 +195,7 @@ def smoh(node):
     """
     Get time since major overhaul from a node.
     """
+    return engine_time(node)
 
 
 def _general_specs(node: Tag) -> List[str]:
