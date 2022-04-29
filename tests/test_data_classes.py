@@ -1,6 +1,8 @@
 from pathlib import Path
 from datetime import datetime, date
-from planefinder.data import AircraftSaleEntry, Database
+import pymongo
+from pymongo.server_api import ServerApi
+from planefinder.data import AircraftSaleEntry, Database, MongoAtlas
 from planefinder import trade_a_plane
 from planefinder import utils
 from bs4 import BeautifulSoup
@@ -78,5 +80,12 @@ Aircraft Location: GYI"""
 
 
 def test_connect_to_mongodb_atlas():
-    db = Database.mongodb()
-    
+    db_user = MongoAtlas.db_user
+    password = MongoAtlas.password
+    db_name = "sample_mflix"
+    client = pymongo.MongoClient(f"mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority", server_api=ServerApi('1'))
+    db = client[db_name]
+    movies = db["movies"]
+    up = movies.find_one({"title": "Up"})
+    assert up["year"] == 2009
+    assert up["awards"]["text"] == "Won 2 Oscars. Another 79 wins & 59 nominations."

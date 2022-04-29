@@ -31,14 +31,20 @@ class PageGetter:
         return requests.get(url).text
 
 
+class MongoAtlas:
+    password = "NHMe4roVZcNRmsaQ"
+    db_name = "planefinder"
+    db_user = "plane-finder-app"
 class Database:
     def __init__(self):
         self.conn = None
     @classmethod
     def mongodb(cls):
-        password = "NHMe4roVZcNRmsaQ"        
-        client = pymongo.MongoClient("mongodb+srv://plane-finder-app:{password}@flydb.c4yh8.mongodb.net/planefinder?retryWrites=true&w=majority", server_api=ServerApi('1'))
-        db = client.test
+        db_user = MongoAtlas.db_name
+        password = MongoAtlas.password
+        db_name = MongoAtlas.db_name
+        client = pymongo.MongoClient("mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority", server_api=ServerApi('1'))
+        db = client[db_name]
         instance = cls()
         instance.conn = client
         return instance
