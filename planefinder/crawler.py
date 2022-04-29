@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from planefinder import trade_a_plane
 from planefinder import utils
 
+
 class ListingsPage:
     def __init__(self, listing_page_url: str):
         self.url = listing_page_url
@@ -36,7 +37,9 @@ class ListingEntry:
 
     @property
     def detail_url(self):
-        absolute_url = str(self.listings_page.url) + trade_a_plane.detail_page_url(self.listing_soup)
+        absolute_url = str(self.listings_page.url) + trade_a_plane.detail_page_url(
+            self.listing_soup
+        )
         return absolute_url
 
 
@@ -48,7 +51,7 @@ class ListingDetail:
     @property
     def listing_id(self, url):
         return trade_a_plane.listing_id(self.page_soup)
-    
+
     @property
     def seller_id(self):
         return trade_a_plane.seller_id(self.page_soup)

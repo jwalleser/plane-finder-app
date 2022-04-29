@@ -83,7 +83,10 @@ def test_connect_to_mongodb_atlas():
     db_user = MongoAtlas.db_user
     password = MongoAtlas.password
     db_name = "sample_mflix"
-    client = pymongo.MongoClient(f"mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority", server_api=ServerApi('1'))
+    client = pymongo.MongoClient(
+        f"mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority",
+        server_api=ServerApi("1"),
+    )
     db = client[db_name]
     movies = db["movies"]
     up = movies.find_one({"title": "Up"})

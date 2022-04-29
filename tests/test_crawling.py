@@ -20,6 +20,7 @@ def test_navigation_from_multiple_listing_page_to_detail_page():
     known_detail_url_part = "/search?category_level1=Single+Engine+Piston&make=CESSNA&model=182T+SKYLANE&listing_id=2403772&s-type=aircraft"
     assert first_listing.detail_url == str(listings_page.url) + known_detail_url_part
 
+
 def test_page_getter():
     getter = PageGetter()
     test_url = "https://www.google.com"
@@ -39,8 +40,9 @@ def multiple_listing_page() -> Path:
     return _test_file("listings-page.html")
 
 
-def test_detail_page() -> str:    
+def test_detail_page() -> str:
     return _test_file("aircraft-detail.html")
+
 
 def _test_file(name: str) -> str:
     this_dir = Path(__file__).parent
