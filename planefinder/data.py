@@ -1,7 +1,8 @@
 from datetime import datetime
 import attr
 import requests
-
+import pymongo
+from pymongo.server_api import ServerApi
 
 @attr.s
 class AircraftSaleEntry:
@@ -28,3 +29,16 @@ class AircraftSaleEntry:
 class PageGetter:
     def get(self, url):
         return requests.get(url).text
+
+
+class Database:
+    def __init__(self):
+        self.conn = None
+    @classmethod
+    def mongodb(cls):
+        password = "NHMe4roVZcNRmsaQ"        
+        client = pymongo.MongoClient("mongodb+srv://plane-finder-app:{password}@flydb.c4yh8.mongodb.net/planefinder?retryWrites=true&w=majority", server_api=ServerApi('1'))
+        db = client.test
+        instance = cls()
+        instance.conn = client
+        return instance

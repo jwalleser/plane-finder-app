@@ -1,6 +1,6 @@
 from pathlib import Path
 from datetime import datetime, date
-from planefinder.data import AircraftSaleEntry
+from planefinder.data import AircraftSaleEntry, Database
 from planefinder import trade_a_plane
 from planefinder import utils
 from bs4 import BeautifulSoup
@@ -75,3 +75,8 @@ Aircraft Location: GYI"""
     assert trade_a_plane.description(soup) == expected_description
     assert trade_a_plane.ttaf(soup) == 3388
     assert trade_a_plane.engine_time(soup) == "271 SMOH"
+
+
+def test_connect_to_mongodb_atlas():
+    db = Database.mongodb()
+    
