@@ -1,5 +1,6 @@
 from datetime import datetime
 import attr
+import requests
 
 
 @attr.s
@@ -22,3 +23,8 @@ class AircraftSaleEntry:
     search_date: datetime = attr.ib()
     ttaf: float = attr.ib()
     smoh: float = attr.ib()
+
+
+class PageGetter:
+    def get(self, url):
+        return requests.get(url).text
