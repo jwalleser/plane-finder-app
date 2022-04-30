@@ -99,3 +99,6 @@ def test_connect_to_mongodb_atlas():
     up = movies.find_one({"title": "Up"})
     assert up["year"] == 2009
     assert up["awards"]["text"] == "Won 2 Oscars. Another 79 wins & 59 nominations."
+
+def test_build_aircraft_sale_entry():
+    pass

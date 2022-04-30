@@ -1,11 +1,8 @@
 import datetime
-from pathlib import Path
 from urllib.parse import urlparse
-from bs4 import BeautifulSoup
-import pytest
-from planefinder import utils
 from planefinder.crawler import ListingDetail, ListingsPage
 from planefinder.data import PageGetter
+from tests.data import test_detail_page, multiple_listing_page
 
 
 def test_navigation_from_multiple_listing_page_to_detail_page():
@@ -50,16 +47,3 @@ def test_aircraft_detail_parsing():
     assert detail.registration == "N7574S"
     assert detail.ttaf == 3388
     assert detail.smoh == "271 SMOH"
-
-
-def multiple_listing_page() -> str:
-    return _test_file("listings-page.html").as_uri()
-
-
-def test_detail_page() -> str:
-    return _test_file("aircraft-detail.html").as_uri()
-
-
-def _test_file(name: str) -> Path:
-    this_dir = Path(__file__).parent
-    return this_dir.joinpath(name)
