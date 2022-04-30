@@ -26,12 +26,19 @@ def test_aircraft_sale_entry():
     )
 
 
+def test_last_listings_page():
+    this_dir = Path(__file__).parent
+    test_listing = this_dir.joinpath("last-listings-page.html").as_uri()
+    soup = utils.read_html_into_soup(test_listing)
+    assert trade_a_plane.next_page_url(soup) is ""
+
+
 def test_read_entry_from_html():
     """
     Read
     """
     this_dir = Path(__file__).parent
-    test_listing = this_dir.joinpath("single-result-listing.html")
+    test_listing = this_dir.joinpath("single-result-listing.html").as_uri()
     soup = utils.read_html_into_soup(test_listing)
     listing = soup.find(trade_a_plane.is_listing_result)
     # Parsed values equal expected values

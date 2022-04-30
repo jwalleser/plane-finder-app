@@ -1,3 +1,4 @@
+from urllib.request import urlopen
 import requests
 from bs4 import BeautifulSoup
 
@@ -6,7 +7,7 @@ def read_html_into_soup(html_file):
     if is_http(html_file):
         html = get_webpage(html_file)
     else:
-        with open(html_file) as f:
+        with urlopen(html_file) as f:
             html = f.read()
     soup = BeautifulSoup(html, features="html.parser")
     return soup

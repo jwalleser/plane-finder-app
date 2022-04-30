@@ -1,5 +1,6 @@
 import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 import pytest
 from planefinder import utils
@@ -21,6 +22,21 @@ def test_navigation_from_multiple_listing_page_to_detail_page():
     assert first_listing.detail_url == str(listings_page.url) + known_detail_url_part
 
 
+def test_navigation_to_next_listing_page():
+    entry_listings_page = ListingsPage(multiple_listing_page())
+    next_listings_page = next(entry_listings_page)
+    assert next_listings_page.url == entry_listings_page.url
+
+
+def test_url_parts():
+    url = "https://www.trade-a-plane.com/search?make=CESSNA&model_group=CESSNA+182+SERIES&s-type=aircraft"
+    parts = urlparse(url)
+    assert parts.scheme == "https"
+    assert parts.netloc == "www.trade-a-plane.com"
+    assert parts.path == "/search"
+    assert parts.query == "make=CESSNA&model_group=CESSNA+182+SERIES&s-type=aircraft"
+
+
 def test_page_getter():
     getter = PageGetter()
     test_url = "https://www.google.com"
@@ -36,14 +52,14 @@ def test_aircraft_detail_parsing():
     assert detail.smoh == "271 SMOH"
 
 
-def multiple_listing_page() -> Path:
-    return _test_file("listings-page.html")
+def multiple_listing_page() -> str:
+    return _test_file("listings-page.html").as_uri()
 
 
 def test_detail_page() -> str:
-    return _test_file("aircraft-detail.html")
+    return _test_file("aircraft-detail.html").as_uri()
 
 
-def _test_file(name: str) -> str:
+def _test_file(name: str) -> Path:
     this_dir = Path(__file__).parent
     return this_dir.joinpath(name)

@@ -1,3 +1,6 @@
+from pathlib import Path
+from urllib.parse import urlparse
+from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from planefinder import trade_a_plane
 from planefinder import utils
@@ -12,6 +15,19 @@ class ListingsPage:
     def entries(self):
         for entry_soup in self.page_soup.find_all(trade_a_plane.is_listing_result):
             yield ListingEntry(self, entry_soup)
+
+    def __next__(self):
+        next_url_path = trade_a_plane.next_page_url(self.page_soup)
+        if next_url_path == "":
+            raise StopIteration
+        parts = urlparse(self.url)
+        if parts.scheme == "file":
+            next_absolute_url = (
+                Path(parts.path[1:]).parent.joinpath(next_url_path).as_uri()
+            )
+        elif parts.scheme.startswith("http"):
+            next_absolute_url = parts.scheme + parts.netloc + next_url_path
+        return ListingsPage(next_absolute_url)
 
 
 class ListingEntry:

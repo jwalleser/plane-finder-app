@@ -11,6 +11,14 @@ from typing import List
 from bs4 import Tag
 
 
+def next_page_url(node):
+    link_tag_with_next_page = node.find(name="link", rel="next")
+    if link_tag_with_next_page:
+        return link_tag_with_next_page.attrs["href"]
+    else:
+        return ""
+
+
 def is_listing_result(tag: Tag):
     """
     True if the node is a result listing.
