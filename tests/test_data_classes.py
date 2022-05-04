@@ -5,6 +5,7 @@ from pymongo.server_api import ServerApi
 from planefinder.data import AircraftSaleEntry, Database, MongoAtlas
 from planefinder import trade_a_plane
 from planefinder import utils
+from planefinder.crawler import ListingsPage, ListingEntry
 from bs4 import BeautifulSoup
 
 
@@ -100,8 +101,9 @@ def test_connect_to_mongodb_atlas():
     assert up["year"] == 2009
     assert up["awards"]["text"] == "Won 2 Oscars. Another 79 wins & 59 nominations."
 
-def test_build_aircraft_sale_entry(listings_page):
-    entry: AircraftSaleEntry = AircraftSaleEntry.from_listings_page(listings_page)
+def test_build_aircraft_sale_entry(listing_entry: ListingEntry):
+    assert isinstance(listing_entry, ListingEntry)
+    entry: AircraftSaleEntry = AircraftSaleEntry.from_listings_entry(listing_entry)
     known_listing_id = "2403772"
     assert entry.id == known_listing_id
     known_seller_id = "46072"

@@ -1,7 +1,12 @@
 from pathlib import Path
 import pytest
 
-from planefinder.crawler import ListingDetail, ListingsPage
+from planefinder.crawler import ListingDetail, ListingEntry, ListingsPage
+
+
+@pytest.fixture
+def listing_entry(listings_page: ListingsPage) -> ListingEntry:
+    return next(listings_page.entries)
 
 
 @pytest.fixture
