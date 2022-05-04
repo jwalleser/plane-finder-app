@@ -4,6 +4,8 @@ import requests
 import pymongo
 from pymongo.server_api import ServerApi
 
+from planefinder.crawler import ListingsPage
+
 
 @attr.s
 class AircraftSaleEntry:
@@ -26,6 +28,21 @@ class AircraftSaleEntry:
     ttaf: float = attr.ib()
     smoh: float = attr.ib()
 
+    
+    @classmethod
+    def from_listings_page(cls, page: ListingsPage):
+        return cls(
+            id=-1,
+            url="",
+            seller_id=-1,
+            make_model="",
+            price=-1,
+            registration="",
+            description="",
+            search_date="",
+            ttaf=-1,
+            smoh=-1
+        )
 
 class PageGetter:
     def get(self, url):

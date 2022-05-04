@@ -100,5 +100,11 @@ def test_connect_to_mongodb_atlas():
     assert up["year"] == 2009
     assert up["awards"]["text"] == "Won 2 Oscars. Another 79 wins & 59 nominations."
 
-def test_build_aircraft_sale_entry():
-    pass
+def test_build_aircraft_sale_entry(listings_page):
+    entry: AircraftSaleEntry = AircraftSaleEntry.from_listings_page(listings_page)
+    known_listing_id = "2403772"
+    assert entry.id == known_listing_id
+    known_seller_id = "46072"
+    assert entry.seller_id == known_seller_id
+    known_last_update = datetime.date(2022, 4, 1)
+    assert entry.last_update == known_last_update
