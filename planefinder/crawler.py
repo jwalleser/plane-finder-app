@@ -1,5 +1,5 @@
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from planefinder import trade_a_plane
@@ -26,7 +26,7 @@ class ListingsPage:
                 Path(parts.path[1:]).parent.joinpath(next_url_path).as_uri()
             )
         elif parts.scheme.startswith("http"):
-            next_absolute_url = parts.scheme + parts.netloc + next_url_path
+            next_absolute_url = urljoin(self.url, next_url_path)
         return ListingsPage(next_absolute_url)
 
 
@@ -53,10 +53,8 @@ class ListingEntry:
 
     @property
     def detail_url(self):
-        absolute_url = str(self.listings_page.url) + trade_a_plane.detail_page_url(
-            self.listing_soup
-        )
-        return absolute_url
+        detail_path = trade_a_plane.detail_page_url(self.listing_soup)
+        return urljoin(self.listings_page.url, detail_path)
 
 
 class ListingDetail:
@@ -90,7 +88,7 @@ class ListingDetail:
 
     @property
     def description(self):
-        return trade_a_plane.description(self.description)
+        return trade_a_plane.description(self.page_soup)
 
     @property
     def ttaf(self):

@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime, date
+import pytest
 import pymongo
 from pymongo.server_api import ServerApi
 from planefinder.data import AircraftSaleEntry, Database, MongoAtlas
@@ -21,7 +22,7 @@ def test_aircraft_sale_entry():
         make_model="CESSNA 182Q SKYLANE",
         registration="N735GS",
         description="1977 Cessna 182Q Skylane, 3461TT, 798 SMOH, 483 SPOH, Garmin GTN 430W, Stratus ES ADS-B Out Transponder (ADS-B In WiFI Traffic and Wx Link to IPad (Foreflight), Narco Mark 12D, Garmin GMA 340, Bendix King KI206, JPI EGT-701 Engine Monitor, Horton STOL Kit (Leading Edge Cuff, Droop Wing Tips, Stall Fences), Rosen Sun Visors, Standby Altimeter, & More!",
-        search_date=datetime(2021, 12, 12, 11, 53),
+        last_update=datetime(2021, 12, 12, 11, 53),
         ttaf=0,
         smoh=0,
     )
@@ -108,5 +109,21 @@ def test_build_aircraft_sale_entry(listing_entry: ListingEntry):
     assert entry.id == known_listing_id
     known_seller_id = "46072"
     assert entry.seller_id == known_seller_id
-    known_last_update = datetime.date(2022, 4, 1)
+    known_last_update = date(2022, 4, 1)
     assert entry.last_update == known_last_update
+
+
+@pytest.fixture
+def aircraft_sale_entry(listing_entry: ListingEntry):
+    return AircraftSaleEntry.from_listings_entry(listing_entry)
+
+
+def test_save_aircraft_sale_entry(aircraft_sale_entry: AircraftSaleEntry, database: Database):
+    database.save(aircraft_sale_entry)
+    database.delete(aircraft_sale_entry)
+
+
+@pytest.fixture
+def database():
+    name = "test_plane_finder"
+    return Database.mongodb(name)
