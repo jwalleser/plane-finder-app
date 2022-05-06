@@ -79,7 +79,7 @@ def last_update(node: Tag) -> datetime:
     search_result = re.search(pattern, update_node.text).group(0)
     date_fmt = "%m/%d/%Y"
     date_ = datetime.strptime(search_result, date_fmt)
-    return date_.date()
+    return date_
 
 
 def detail_page_url(node: Tag) -> str:

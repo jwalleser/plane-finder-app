@@ -1,10 +1,12 @@
 from pathlib import Path
-from datetime import datetime, date
+from datetime import datetime
+import pytest
 import pymongo
 from pymongo.server_api import ServerApi
 from planefinder.data import AircraftSaleEntry, Database, MongoAtlas
 from planefinder import trade_a_plane
 from planefinder import utils
+from planefinder.crawler import ListingsPage, ListingEntry
 from bs4 import BeautifulSoup
 
 
@@ -20,7 +22,7 @@ def test_aircraft_sale_entry():
         make_model="CESSNA 182Q SKYLANE",
         registration="N735GS",
         description="1977 Cessna 182Q Skylane, 3461TT, 798 SMOH, 483 SPOH, Garmin GTN 430W, Stratus ES ADS-B Out Transponder (ADS-B In WiFI Traffic and Wx Link to IPad (Foreflight), Narco Mark 12D, Garmin GMA 340, Bendix King KI206, JPI EGT-701 Engine Monitor, Horton STOL Kit (Leading Edge Cuff, Droop Wing Tips, Stall Fences), Rosen Sun Visors, Standby Altimeter, & More!",
-        search_date=datetime(2021, 12, 12, 11, 53),
+        last_update=datetime(2021, 12, 12, 11, 53),
         ttaf=0,
         smoh=0,
     )
@@ -44,7 +46,7 @@ def test_read_entry_from_html():
     # Parsed values equal expected values
     assert trade_a_plane.listing_id(listing) == "2399126"
     assert trade_a_plane.seller_id(listing) == "49743"
-    assert trade_a_plane.last_update(listing) == date(2021, 11, 9)
+    assert trade_a_plane.last_update(listing) == datetime(2021, 11, 9)
     test_details = this_dir.joinpath("aircraft-detail.html")
     with open(test_details) as f:
         html = f.read()
@@ -100,5 +102,28 @@ def test_connect_to_mongodb_atlas():
     assert up["year"] == 2009
     assert up["awards"]["text"] == "Won 2 Oscars. Another 79 wins & 59 nominations."
 
-def test_build_aircraft_sale_entry():
-    pass
+def test_build_aircraft_sale_entry(listing_entry: ListingEntry):
+    assert isinstance(listing_entry, ListingEntry)
+    entry: AircraftSaleEntry = AircraftSaleEntry.from_listings_entry(listing_entry)
+    known_listing_id = "2403772"
+    assert entry.id == known_listing_id
+    known_seller_id = "46072"
+    assert entry.seller_id == known_seller_id
+    known_last_update = datetime(2022, 4, 1)
+    assert entry.last_update == known_last_update
+
+
+@pytest.fixture
+def aircraft_sale_entry(listing_entry: ListingEntry):
+    return AircraftSaleEntry.from_listings_entry(listing_entry)
+
+
+def test_save_aircraft_sale_entry(aircraft_sale_entry: AircraftSaleEntry, database: Database):
+    database.save(aircraft_sale_entry)
+    database.delete(aircraft_sale_entry)
+
+
+@pytest.fixture
+def database():
+    name = "test_plane_finder"
+    return Database.mongodb(name)
