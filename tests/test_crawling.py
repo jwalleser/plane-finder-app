@@ -1,6 +1,6 @@
 import datetime
-from urllib.parse import urlparse
-from planefinder.crawler import ListingDetail, ListingsPage
+from urllib.parse import urlparse, urljoin
+from planefinder.crawler import ListingDetail, ListingEntry, ListingsPage
 from planefinder.data import PageGetter
 
 
@@ -13,8 +13,12 @@ def test_navigation_from_multiple_listing_page_to_detail_page(listings_page):
     assert first_listing.seller == known_seller_id
     known_last_update = datetime.date(2022, 4, 1)
     assert first_listing.last_update == known_last_update
-    known_detail_url_part = "/search?category_level1=Single+Engine+Piston&make=CESSNA&model=182T+SKYLANE&listing_id=2403772&s-type=aircraft"
-    assert first_listing.detail_url == str(listings_page.url) + known_detail_url_part
+    known_detail_url_part = "aircraft-detail.html"
+    assert first_listing.detail_url == urljoin(listings_page.url, known_detail_url_part)
+
+
+def test_listing_page_detail_url(listing_entry: ListingEntry):
+    assert listing_entry.detail_url == urljoin(listing_entry.listings_page.url , "aircraft-detail.html")
 
 
 def test_navigation_to_next_listing_page(listings_page):

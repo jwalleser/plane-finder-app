@@ -24,7 +24,7 @@ class AircraftSaleEntry:
     price: float = attr.ib()
     registration: str = attr.ib()
     description: str = attr.ib()
-    search_date: datetime = attr.ib()
+    last_update: datetime = attr.ib()
     ttaf: float = attr.ib()
     smoh: float = attr.ib()
 
@@ -39,7 +39,7 @@ class AircraftSaleEntry:
             price=entry.detail.price,
             registration=entry.detail.registration,
             description=entry.detail.description,
-            search_date=entry.last_update,
+            last_update=entry.last_update,
             ttaf=entry.detail.ttaf,
             smoh=entry.detail.smoh
         )
@@ -58,12 +58,14 @@ class MongoAtlas:
 class Database:
     def __init__(self):
         self.conn = None
+    
+    def save(self, object_):
+        raise NotImplementedError("Not yet implemented")
 
     @classmethod
-    def mongodb(cls):
+    def mongodb(cls, db_name=MongoAtlas.db_name):
         db_user = MongoAtlas.db_name
         password = MongoAtlas.password
-        db_name = MongoAtlas.db_name
         client = pymongo.MongoClient(
             "mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority",
             server_api=ServerApi("1"),
