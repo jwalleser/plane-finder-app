@@ -4,6 +4,7 @@ import requests
 import pymongo
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
+from pymongo.results import InsertOneResult
 
 from planefinder.crawler import ListingEntry
 
@@ -63,7 +64,7 @@ class Database:
     
     def save(self, object_):
         if isinstance(object_, AircraftSaleEntry):
-            return self.conn["AircraftSaleEntry"].insert_one(object_.__dict__).inserted_id
+            return self._save_aircraft_entry(object_)
         else:
             raise NotImplementedError("I only know how to save AircraftSaleEntry objects")
     
@@ -74,6 +75,9 @@ class Database:
             self.conn["AircraftSaleEntry"].delete_one({"id": object_.id})
         else:
             raise NotImplementedError("Not yet implemented")
+
+    def _save_aircraft_entry(self, entry: AircraftSaleEntry) -> InsertOneResult:
+        return self.conn["AircraftSaleEntry"].insert_one(entry.__dict__).inserted_id
 
     @classmethod
     def mongodb(cls, db_name=MongoAtlas.db_name):
