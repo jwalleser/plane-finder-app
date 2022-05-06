@@ -31,7 +31,6 @@ class AircraftSaleEntry:
     ttaf: float = attr.ib()
     smoh: float = attr.ib()
 
-    
     @classmethod
     def from_listings_entry(cls, entry: ListingEntry):
         return cls(
@@ -44,8 +43,9 @@ class AircraftSaleEntry:
             description=entry.detail.description,
             last_update=entry.last_update,
             ttaf=entry.detail.ttaf,
-            smoh=entry.detail.smoh
+            smoh=entry.detail.smoh,
         )
+
 
 class PageGetter:
     def get(self, url):
@@ -61,13 +61,15 @@ class MongoAtlas:
 class Database:
     def __init__(self):
         self.conn = None
-    
+
     def save(self, object_):
         if isinstance(object_, AircraftSaleEntry):
             return self._save_aircraft_entry(object_)
         else:
-            raise NotImplementedError("I only know how to save AircraftSaleEntry objects")
-    
+            raise NotImplementedError(
+                "I only know how to save AircraftSaleEntry objects"
+            )
+
     def delete(self, object_):
         if isinstance(object_, ObjectId):
             self.conn["AircraftSaleEntry"].delete_one({"_id": object_})

@@ -8,9 +8,11 @@ from planefinder import logging
 from planefinder.crawler import ListingDetail, ListingEntry, ListingsPage
 
 HTTP_PORT = 8000
+
+
 @pytest.fixture(scope="session", autouse=True)
 def http_server():
-    server_address = ('localhost', HTTP_PORT)
+    server_address = ("localhost", HTTP_PORT)
     handler_class = TestHTTPRequestHandler
     httpd = HTTPServer(server_address, handler_class)
     server_thread = threading.Thread(target=httpd.serve_forever)
@@ -25,8 +27,11 @@ def http_server():
 
 class TestHTTPRequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, request, client_address, server):
-        super().__init__(request, client_address, server, directory=Path(__file__).parent)
-    
+        super().__init__(
+            request, client_address, server, directory=Path(__file__).parent
+        )
+
+
 @pytest.fixture
 def listing_entry(listings_page: ListingsPage) -> ListingEntry:
     return next(listings_page.entries)
@@ -49,7 +54,7 @@ def multiple_listing_page() -> str:
 
 @pytest.fixture
 def test_detail_uri() -> str:
-    return F"http://localhost:{HTTP_PORT}/aircraft-detail.html"
+    return f"http://localhost:{HTTP_PORT}/aircraft-detail.html"
 
 
 def _test_file(name: str) -> Path:

@@ -4,7 +4,9 @@ from planefinder.crawler import ListingDetail, ListingEntry, ListingsPage
 from planefinder.data import PageGetter
 
 
-def test_navigation_from_multiple_listing_page_to_detail_page(listings_page: ListingsPage):
+def test_navigation_from_multiple_listing_page_to_detail_page(
+    listings_page: ListingsPage,
+):
     first_listing = next(listings_page.entries)
     assert first_listing
     known_listing_id = "2403772"
@@ -18,7 +20,9 @@ def test_navigation_from_multiple_listing_page_to_detail_page(listings_page: Lis
 
 
 def test_listing_page_detail_url(listing_entry: ListingEntry):
-    assert listing_entry.detail_url == urljoin(listing_entry.listings_page.url , "aircraft-detail.html")
+    assert listing_entry.detail_url == urljoin(
+        listing_entry.listings_page.url, "aircraft-detail.html"
+    )
 
 
 def test_navigation_to_next_listing_page(listings_page: ListingsPage):

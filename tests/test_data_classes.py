@@ -102,6 +102,7 @@ def test_connect_to_mongodb_atlas():
     assert up["year"] == 2009
     assert up["awards"]["text"] == "Won 2 Oscars. Another 79 wins & 59 nominations."
 
+
 def test_build_aircraft_sale_entry(listing_entry: ListingEntry):
     assert isinstance(listing_entry, ListingEntry)
     entry: AircraftSaleEntry = AircraftSaleEntry.from_listings_entry(listing_entry)
@@ -118,7 +119,9 @@ def aircraft_sale_entry(listing_entry: ListingEntry):
     return AircraftSaleEntry.from_listings_entry(listing_entry)
 
 
-def test_save_aircraft_sale_entry(aircraft_sale_entry: AircraftSaleEntry, database: Database):
+def test_save_aircraft_sale_entry(
+    aircraft_sale_entry: AircraftSaleEntry, database: Database
+):
     database.save(aircraft_sale_entry)
     database.delete(aircraft_sale_entry)
 
