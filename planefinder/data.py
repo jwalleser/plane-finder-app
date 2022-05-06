@@ -3,6 +3,7 @@ import attr
 import requests
 import pymongo
 from pymongo.server_api import ServerApi
+from bson.objectid import ObjectId
 
 from planefinder.crawler import ListingEntry
 
@@ -17,6 +18,7 @@ class AircraftSaleEntry:
     how much.
     """
 
+    _id: ObjectId = attr.ib(init=False)
     id: int = attr.ib()
     url: str = attr.ib()
     seller_id: int = attr.ib()
@@ -60,17 +62,28 @@ class Database:
         self.conn = None
     
     def save(self, object_):
-        raise NotImplementedError("Not yet implemented")
+        if isinstance(object_, AircraftSaleEntry):
+            return self.conn["AircraftSaleEntry"].insert_one(object_.__dict__).inserted_id
+        else:
+            raise NotImplementedError("I only know how to save AircraftSaleEntry objects")
+    
+    def delete(self, object_):
+        if isinstance(object_, ObjectId):
+            self.conn["AircraftSaleEntry"].delete_one({"_id": object_})
+        elif isinstance(object_, AircraftSaleEntry):
+            self.conn["AircraftSaleEntry"].delete_one({"id": object_.id})
+        else:
+            raise NotImplementedError("Not yet implemented")
 
     @classmethod
     def mongodb(cls, db_name=MongoAtlas.db_name):
-        db_user = MongoAtlas.db_name
+        db_user = MongoAtlas.db_user
         password = MongoAtlas.password
         client = pymongo.MongoClient(
-            "mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority",
+            f"mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority",
             server_api=ServerApi("1"),
         )
         db = client[db_name]
         instance = cls()
-        instance.conn = client
+        instance.conn = db
         return instance
