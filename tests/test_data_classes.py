@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime, date
+from datetime import datetime
 import pytest
 import pymongo
 from pymongo.server_api import ServerApi
@@ -46,7 +46,7 @@ def test_read_entry_from_html():
     # Parsed values equal expected values
     assert trade_a_plane.listing_id(listing) == "2399126"
     assert trade_a_plane.seller_id(listing) == "49743"
-    assert trade_a_plane.last_update(listing) == date(2021, 11, 9)
+    assert trade_a_plane.last_update(listing) == datetime(2021, 11, 9)
     test_details = this_dir.joinpath("aircraft-detail.html")
     with open(test_details) as f:
         html = f.read()
@@ -109,7 +109,7 @@ def test_build_aircraft_sale_entry(listing_entry: ListingEntry):
     assert entry.id == known_listing_id
     known_seller_id = "46072"
     assert entry.seller_id == known_seller_id
-    known_last_update = date(2022, 4, 1)
+    known_last_update = datetime(2022, 4, 1)
     assert entry.last_update == known_last_update
 
 

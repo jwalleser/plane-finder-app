@@ -1,17 +1,17 @@
-import datetime
+from datetime import datetime
 from urllib.parse import urlparse, urljoin
 from planefinder.crawler import ListingDetail, ListingEntry, ListingsPage
 from planefinder.data import PageGetter
 
 
-def test_navigation_from_multiple_listing_page_to_detail_page(listings_page):
+def test_navigation_from_multiple_listing_page_to_detail_page(listings_page: ListingsPage):
     first_listing = next(listings_page.entries)
     assert first_listing
     known_listing_id = "2403772"
     assert first_listing.id == known_listing_id
     known_seller_id = "46072"
     assert first_listing.seller == known_seller_id
-    known_last_update = datetime.date(2022, 4, 1)
+    known_last_update = datetime(2022, 4, 1)
     assert first_listing.last_update == known_last_update
     known_detail_url_part = "aircraft-detail.html"
     assert first_listing.detail_url == urljoin(listings_page.url, known_detail_url_part)
@@ -21,7 +21,7 @@ def test_listing_page_detail_url(listing_entry: ListingEntry):
     assert listing_entry.detail_url == urljoin(listing_entry.listings_page.url , "aircraft-detail.html")
 
 
-def test_navigation_to_next_listing_page(listings_page):
+def test_navigation_to_next_listing_page(listings_page: ListingsPage):
     next_listings_page = next(listings_page)
     assert next_listings_page.url == listings_page.url
 
@@ -42,7 +42,7 @@ def test_page_getter():
     assert html.lower().startswith("<!doctype html>")
 
 
-def test_aircraft_detail_parsing(listing_detail):
+def test_aircraft_detail_parsing(listing_detail: ListingDetail):
     assert listing_detail.make_model == "CESSNA 182Q SKYLANE"
     assert listing_detail.registration == "N7574S"
     assert listing_detail.ttaf == 3388
