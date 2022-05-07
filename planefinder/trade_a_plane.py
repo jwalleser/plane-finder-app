@@ -25,6 +25,9 @@ class ListingsPage:
         for entry_soup in self.page_soup.find_all(is_listing_result):
             yield ListingEntry(self, entry_soup)
 
+    def __iter__(self):
+        return self
+    
     def __next__(self):
         next_url_path = next_page_url(self.page_soup)
         if next_url_path == "":
