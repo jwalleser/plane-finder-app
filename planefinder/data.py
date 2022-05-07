@@ -1,5 +1,6 @@
 from datetime import datetime
 import attr
+from bs4 import BeautifulSoup
 import requests
 import pymongo
 from pymongo.server_api import ServerApi
@@ -48,8 +49,13 @@ class AircraftSaleEntry:
 
 
 class PageGetter:
-    def get(self, url):
+    def get(self, url) -> str:
         return requests.get(url).text
+
+    def get_soup(self, html_file):
+        html = self.get(html_file)
+        soup = BeautifulSoup(html, features="html.parser")
+        return soup
 
 
 class MongoAtlas:

@@ -12,13 +12,13 @@ from typing import List
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup, Tag
 
-from planefinder import utils
-
 
 class ListingsPage:
     def __init__(self, listing_page_url: str):
+        from planefinder.data import PageGetter
+        page_getter = PageGetter()
         self.url = listing_page_url
-        self.page_soup = utils.read_html_into_soup(listing_page_url)
+        self.page_soup = page_getter.get_soup(listing_page_url)
 
     @property
     def entries(self):
@@ -71,8 +71,10 @@ class ListingEntry:
 
 class ListingDetail:
     def __init__(self, url):
+        from planefinder.data import PageGetter
+        page_getter = PageGetter()
         self.url = url
-        self.page_soup = utils.read_html_into_soup(self.url)
+        self.page_soup = page_getter.get_soup(self.url)
 
     @property
     def listing_id(self, url):
