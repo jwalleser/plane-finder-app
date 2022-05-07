@@ -6,7 +6,7 @@ from pymongo.server_api import ServerApi
 from planefinder.data import AircraftSaleEntry, Database, MongoAtlas
 from planefinder import trade_a_plane
 from planefinder import utils
-from planefinder.crawler import ListingsPage, ListingEntry
+from planefinder.trade_a_plane import ListingsPage, ListingEntry
 from bs4 import BeautifulSoup
 
 

@@ -1,7 +1,8 @@
 from datetime import datetime
 from urllib.parse import urlparse, urljoin
-from planefinder.crawler import ListingDetail, ListingEntry, ListingsPage
-from planefinder.data import PageGetter
+from planefinder.trade_a_plane import ListingsPage, ListingEntry, ListingDetail
+from planefinder.crawler import Crawler
+from planefinder.data import Database, PageGetter
 
 
 def test_navigation_from_multiple_listing_page_to_detail_page(
@@ -51,3 +52,10 @@ def test_aircraft_detail_parsing(listing_detail: ListingDetail):
     assert listing_detail.registration == "N7574S"
     assert listing_detail.ttaf == 3388
     assert listing_detail.smoh == "271 SMOH"
+
+
+def test_crawl_webpage_from_entry_url():
+    cessna_182_trade_a_plane = "https://www.trade-a-plane.com/search?category_level1=Single+Engine+Piston&make=CESSNA&model_group=CESSNA+182+SERIES&s-type=aircraft"
+    test_database = Database.mongodb("planefinder_test_crawl")
+    crawler = Crawler(cessna_182_trade_a_plane, test_database)
+    crawler.crawl()

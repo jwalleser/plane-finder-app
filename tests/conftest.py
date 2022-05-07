@@ -5,8 +5,9 @@ import threading
 import pytest
 from planefinder import logging
 
-from planefinder.crawler import ListingDetail, ListingEntry, ListingsPage
+from planefinder import trade_a_plane as tap
 
+logging.setup_applevel_logger("Planefinder Test", "plane-finder-test.log")
 HTTP_PORT = 8000
 
 
@@ -33,18 +34,18 @@ class TestHTTPRequestHandler(SimpleHTTPRequestHandler):
 
 
 @pytest.fixture
-def listing_entry(listings_page: ListingsPage) -> ListingEntry:
+def listing_entry(listings_page: tap.ListingsPage) -> tap.ListingEntry:
     return next(listings_page.entries)
 
 
 @pytest.fixture
-def listings_page(multiple_listing_page) -> ListingsPage:
-    return ListingsPage(multiple_listing_page)
+def listings_page(multiple_listing_page) -> tap.ListingsPage:
+    return tap.ListingsPage(multiple_listing_page)
 
 
 @pytest.fixture
-def listing_detail(test_detail_uri) -> ListingDetail:
-    return ListingDetail(test_detail_uri)
+def listing_detail(test_detail_uri) -> tap.ListingDetail:
+    return tap.ListingDetail(test_detail_uri)
 
 
 @pytest.fixture

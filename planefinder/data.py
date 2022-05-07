@@ -6,7 +6,7 @@ from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 from pymongo.results import InsertOneResult
 
-from planefinder.crawler import ListingEntry
+from planefinder.trade_a_plane import ListingEntry
 
 
 @attr.s
