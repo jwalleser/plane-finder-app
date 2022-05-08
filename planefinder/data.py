@@ -1,12 +1,19 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
+from urllib.parse import urlparse
 import attr
+from bs4 import BeautifulSoup
 import requests
 import pymongo
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 from pymongo.results import InsertOneResult
+from cachetools import cached, TTLCache
 
-from planefinder.crawler import ListingEntry
+from planefinder.trade_a_plane import ListingEntry
+from planefinder import logging
+
+log = logging.get_logger(__name__)
 
 
 @attr.s
@@ -48,8 +55,30 @@ class AircraftSaleEntry:
 
 
 class PageGetter:
-    def get(self, url):
-        return requests.get(url).text
+    def __init__(self):
+        self.last_request_from_host = {}
+        self.min_request_interval_in_seconds = 2
+
+    @cached(cache=TTLCache(100, ttl=86400))
+    def get(self, url) -> str:
+        log.info(f"Getting data from {url}")
+        parsed_url = urlparse(url)
+        hostname = parsed_url.hostname
+        if hostname in self.last_request_from_host:
+            time_elapsed_since_last_request = datetime.now() - self.last_request_from_host[hostname]
+            if time_elapsed_since_last_request < timedelta(seconds=self.min_request_interval_in_seconds):
+                time.sleep(self.min_request_interval_in_seconds)
+        self.last_request_from_host[hostname] = datetime.now()
+        response = requests.get(url)
+        if response.status_code == 429:
+            log.warning(f"Too many requests too fast to {hostname}: {response.headers}")
+            raise Exception("Could not get page data")
+        return response.text
+
+    def get_soup(self, html_file):
+        html = self.get(html_file)
+        soup = BeautifulSoup(html, features="html.parser")
+        return soup
 
 
 class MongoAtlas:

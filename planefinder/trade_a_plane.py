@@ -5,10 +5,129 @@ Most functions accept a node from an HTML document and return the
 first matching data.
 """
 
+from pathlib import Path
 import re
 from datetime import datetime
 from typing import List
-from bs4 import Tag
+from urllib.parse import urljoin, urlparse
+from bs4 import BeautifulSoup, Tag
+
+
+class TAPPageGetter:
+    page_getter = None
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def get_instance(cls):
+        from planefinder.data import PageGetter
+        if cls.page_getter is None:
+            cls.page_getter = PageGetter()
+        return cls.page_getter
+
+
+class ListingsPage:
+    def __init__(self, listing_page_url: str):
+        self._page_getter = TAPPageGetter.get_instance()
+        self.url = listing_page_url
+        self.page_soup = self._page_getter.get_soup(listing_page_url)
+
+    @property
+    def entries(self):
+        for entry_soup in self.page_soup.find_all(is_listing_result):
+            yield ListingEntry(self, entry_soup)
+
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        next_url_path = next_page_url(self.page_soup)
+        if next_url_path == "":
+            raise StopIteration
+        parts = urlparse(self.url)
+        if parts.scheme == "file":
+            next_absolute_url = (
+                Path(parts.path[1:]).parent.joinpath(next_url_path).as_uri()
+            )
+        elif parts.scheme.startswith("http"):
+            next_absolute_url = urljoin(self.url, next_url_path)
+        self.url = next_absolute_url
+        self.page_soup = self._page_getter.get_soup(self.url)
+        return self
+
+
+class ListingEntry:
+    def __init__(self, listings_page: ListingsPage, listing_soup: BeautifulSoup):
+        self.listings_page = listings_page
+        self.listing_soup = listing_soup
+
+    @property
+    def id(self):
+        return listing_id(self.listing_soup)
+
+    @property
+    def seller(self):
+        return seller_id(self.listing_soup)
+
+    @property
+    def last_update(self):
+        return last_update(self.listing_soup)
+
+    @property
+    def detail(self):
+        return ListingDetail(self.detail_url)
+
+    @property
+    def detail_url(self):
+        detail_path = detail_page_url(self.listing_soup)
+        return urljoin(self.listings_page.url, detail_path)
+
+
+class ListingDetail:
+    def __init__(self, url):
+        page_getter = TAPPageGetter.get_instance()
+        self.url = url
+        self.page_soup = page_getter.get_soup(self.url)
+
+    @property
+    def listing_id(self, url):
+        return listing_id(self.page_soup)
+
+    @property
+    def seller_id(self):
+        return seller_id(self.page_soup)
+
+    @property
+    def last_update(self):
+        return last_update(self.page_soup)
+
+    @property
+    def make_model(self):
+        return make_model(self.page_soup)
+
+    @property
+    def price(self):
+        return price(self.page_soup)
+
+    @property
+    def registration(self):
+        return registration(self.page_soup)
+
+    @property
+    def description(self):
+        return description(self.page_soup)
+
+    @property
+    def ttaf(self):
+        return ttaf(self.page_soup)
+
+    @property
+    def engine_time(self):
+        return engine_time(self.page_soup)
+
+    @property
+    def smoh(self):
+        return smoh(self.page_soup)
 
 
 def next_page_url(node):
@@ -74,12 +193,15 @@ def last_update(node: Tag) -> datetime:
     node: Tag
         A `result_listing` node
     """
-    update_node = node.find(name="p", class_="last-update")
-    pattern = r"\d{2}/\d{2}/\d{4}"
-    search_result = re.search(pattern, update_node.text).group(0)
-    date_fmt = "%m/%d/%Y"
-    date_ = datetime.strptime(search_result, date_fmt)
-    return date_
+    try:
+        update_node = node.find(name="p", class_="last-update")
+        pattern = r"\d{2}/\d{2}/\d{4}"
+        search_result = re.search(pattern, update_node.text).group(0)
+        date_fmt = "%m/%d/%Y"
+        date_ = datetime.strptime(search_result, date_fmt)
+        return date_
+    except AttributeError:
+        return datetime.now()
 
 
 def detail_page_url(node: Tag) -> str:
@@ -121,9 +243,10 @@ def price(node: Tag) -> float:
         raise ValueError(
             'Expected to find a node containing a <div id="main_info"> tag'
         )
-    price_text = main_info.find(name="span", itemprop="price").text
-    if price_text is None:
-        raise ValueError('Expected to find a <span itemprop="price"> tag')
+    try:
+        price_text = main_info.find(name="span", itemprop="price").text
+    except AttributeError:
+        return 0
     return float(price_text)
 
 

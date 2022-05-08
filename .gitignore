@@ -3,3 +3,4 @@
 .vs
 .pytest_cache
 tests/**/*.log
+*.log

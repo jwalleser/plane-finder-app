@@ -3,17 +3,19 @@ from datetime import datetime
 import pytest
 import pymongo
 from pymongo.server_api import ServerApi
-from planefinder.data import AircraftSaleEntry, Database, MongoAtlas
-from planefinder import trade_a_plane
-from planefinder import utils
-from planefinder.crawler import ListingsPage, ListingEntry
+# from planefinder.data import AircraftSaleEntry, Database, MongoAtlas, PageGetter
+# from planefinder import trade_a_plane
+# from planefinder.trade_a_plane import ListingsPage, ListingEntry
 from bs4 import BeautifulSoup
+
+# from planefinder.data import Database
 
 
 def test_aircraft_sale_entry():
     """
     Tests whether an AircraftSaleEntry can be created.
     """
+    from planefinder.data import AircraftSaleEntry
     AircraftSaleEntry(
         id=2399126,
         url="https://www.trade-a-plane.com/search?category_level1=Single+Engine+Piston&make=CESSNA&model=182Q+SKYLANE&listing_id=2400626&s-type=aircraft",
@@ -28,29 +30,29 @@ def test_aircraft_sale_entry():
     )
 
 
-def test_last_listings_page():
-    this_dir = Path(__file__).parent
-    test_listing = this_dir.joinpath("last-listings-page.html").as_uri()
-    soup = utils.read_html_into_soup(test_listing)
-    assert trade_a_plane.next_page_url(soup) is ""
+def test_last_listings_page(page_getter):
+    from planefinder.trade_a_plane import next_page_url
+    test_listing = "http://localhost:8000/last-listings-page.html"
+    soup = page_getter.get_soup(test_listing)
+    assert next_page_url(soup) is ""
 
 
-def test_read_entry_from_html():
+def test_read_entry_from_html(page_getter):
     """
     Read
     """
-    this_dir = Path(__file__).parent
-    test_listing = this_dir.joinpath("single-result-listing.html").as_uri()
-    soup = utils.read_html_into_soup(test_listing)
+    from planefinder import trade_a_plane
+    from planefinder.data import PageGetter
+    page_getter = PageGetter()
+    test_listing = "http://localhost:8000/single-result-listing.html"
+    soup = page_getter.get_soup(test_listing)
     listing = soup.find(trade_a_plane.is_listing_result)
     # Parsed values equal expected values
     assert trade_a_plane.listing_id(listing) == "2399126"
     assert trade_a_plane.seller_id(listing) == "49743"
     assert trade_a_plane.last_update(listing) == datetime(2021, 11, 9)
-    test_details = this_dir.joinpath("aircraft-detail.html")
-    with open(test_details) as f:
-        html = f.read()
-    soup = BeautifulSoup(html, features="html.parser")
+    test_details = "http://localhost:8000/aircraft-detail.html"
+    soup = page_getter.get_soup(test_details)
     assert trade_a_plane.make_model(soup) == "CESSNA 182Q SKYLANE"
     assert trade_a_plane.price(soup) == 250000
     assert trade_a_plane.registration(soup) == "N7574S"
@@ -89,6 +91,7 @@ Aircraft Location: GYI"""
 
 
 def test_connect_to_mongodb_atlas():
+    from planefinder.data import MongoAtlas
     db_user = MongoAtlas.db_user
     password = MongoAtlas.password
     db_name = "sample_mflix"
@@ -103,7 +106,9 @@ def test_connect_to_mongodb_atlas():
     assert up["awards"]["text"] == "Won 2 Oscars. Another 79 wins & 59 nominations."
 
 
-def test_build_aircraft_sale_entry(listing_entry: ListingEntry):
+def test_build_aircraft_sale_entry(listing_entry):
+    from planefinder.data import AircraftSaleEntry
+    from planefinder.trade_a_plane import ListingEntry
     assert isinstance(listing_entry, ListingEntry)
     entry: AircraftSaleEntry = AircraftSaleEntry.from_listings_entry(listing_entry)
     known_listing_id = "2403772"
@@ -115,18 +120,18 @@ def test_build_aircraft_sale_entry(listing_entry: ListingEntry):
 
 
 @pytest.fixture
-def aircraft_sale_entry(listing_entry: ListingEntry):
+def aircraft_sale_entry(listing_entry):
+    from planefinder.data import AircraftSaleEntry
     return AircraftSaleEntry.from_listings_entry(listing_entry)
 
 
-def test_save_aircraft_sale_entry(
-    aircraft_sale_entry: AircraftSaleEntry, database: Database
-):
+def test_save_aircraft_sale_entry(aircraft_sale_entry, database):
     database.save(aircraft_sale_entry)
     database.delete(aircraft_sale_entry)
 
 
 @pytest.fixture
 def database():
+    from planefinder.data import Database
     name = "test_plane_finder"
     return Database.mongodb(name)
