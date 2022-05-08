@@ -13,12 +13,24 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup, Tag
 
 
+class TAPPageGetter:
+    page_getter = None
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def get_instance(cls):
+        from planefinder.data import PageGetter
+        if cls.page_getter is None:
+            cls.page_getter = PageGetter()
+        return cls.page_getter
+
+
 class ListingsPage:
     def __init__(self, listing_page_url: str):
-        from planefinder.data import PageGetter
-        page_getter = PageGetter()
+        self._page_getter = TAPPageGetter.get_instance()
         self.url = listing_page_url
-        self.page_soup = page_getter.get_soup(listing_page_url)
+        self.page_soup = self._page_getter.get_soup(listing_page_url)
 
     @property
     def entries(self):
@@ -39,7 +51,9 @@ class ListingsPage:
             )
         elif parts.scheme.startswith("http"):
             next_absolute_url = urljoin(self.url, next_url_path)
-        return ListingsPage(next_absolute_url)
+        self.url = next_absolute_url
+        self.page_soup = self._page_getter.get_soup(self.url)
+        return self
 
 
 class ListingEntry:
@@ -71,8 +85,7 @@ class ListingEntry:
 
 class ListingDetail:
     def __init__(self, url):
-        from planefinder.data import PageGetter
-        page_getter = PageGetter()
+        page_getter = TAPPageGetter.get_instance()
         self.url = url
         self.page_soup = page_getter.get_soup(self.url)
 
@@ -180,12 +193,15 @@ def last_update(node: Tag) -> datetime:
     node: Tag
         A `result_listing` node
     """
-    update_node = node.find(name="p", class_="last-update")
-    pattern = r"\d{2}/\d{2}/\d{4}"
-    search_result = re.search(pattern, update_node.text).group(0)
-    date_fmt = "%m/%d/%Y"
-    date_ = datetime.strptime(search_result, date_fmt)
-    return date_
+    try:
+        update_node = node.find(name="p", class_="last-update")
+        pattern = r"\d{2}/\d{2}/\d{4}"
+        search_result = re.search(pattern, update_node.text).group(0)
+        date_fmt = "%m/%d/%Y"
+        date_ = datetime.strptime(search_result, date_fmt)
+        return date_
+    except AttributeError:
+        return datetime.now()
 
 
 def detail_page_url(node: Tag) -> str:
@@ -227,9 +243,10 @@ def price(node: Tag) -> float:
         raise ValueError(
             'Expected to find a node containing a <div id="main_info"> tag'
         )
-    price_text = main_info.find(name="span", itemprop="price").text
-    if price_text is None:
-        raise ValueError('Expected to find a <span itemprop="price"> tag')
+    try:
+        price_text = main_info.find(name="span", itemprop="price").text
+    except AttributeError:
+        return 0
     return float(price_text)
 
 
