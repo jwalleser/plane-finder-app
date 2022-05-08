@@ -7,7 +7,7 @@ import pytest
 from planefinder import logging
 
 
-logging.setup_applevel_logger("Planefinder Test", "plane-finder-test.log")
+logging.setup_applevel_logger(file_name="plane-finder-test.log")
 HTTP_PORT = 8000
 
 
