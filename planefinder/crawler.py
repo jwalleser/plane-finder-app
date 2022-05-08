@@ -28,8 +28,9 @@ class Crawler:
     def crawl(self):
         log.info(f"Crawling, starting from {self.entry}")
         listings_page = tap.ListingsPage(self.entry)
-        page_counter = 1
+        page_counter = 0
         for page in listings_page:
+            page_counter += 1
             log.info(f"Reading entries, page {page_counter}")
             for entry in page.entries:
                 aircraft_sale_entry = AircraftSaleEntry.from_listings_entry(entry)
