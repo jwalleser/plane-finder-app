@@ -15,12 +15,14 @@ from bs4 import BeautifulSoup, Tag
 
 class TAPPageGetter:
     page_getter = None
+
     def __init__(self):
         pass
-    
+
     @classmethod
     def get_instance(cls):
         from planefinder.data import PageGetter
+
         if cls.page_getter is None:
             cls.page_getter = PageGetter()
         return cls.page_getter
@@ -39,7 +41,7 @@ class ListingsPage:
 
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         next_url_path = next_page_url(self.page_soup)
         if next_url_path == "":

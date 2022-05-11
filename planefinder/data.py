@@ -65,8 +65,12 @@ class PageGetter:
         parsed_url = urlparse(url)
         hostname = parsed_url.hostname
         if hostname in self.last_request_from_host:
-            time_elapsed_since_last_request = datetime.now() - self.last_request_from_host[hostname]
-            if time_elapsed_since_last_request < timedelta(seconds=self.min_request_interval_in_seconds):
+            time_elapsed_since_last_request = (
+                datetime.now() - self.last_request_from_host[hostname]
+            )
+            if time_elapsed_since_last_request < timedelta(
+                seconds=self.min_request_interval_in_seconds
+            ):
                 time.sleep(self.min_request_interval_in_seconds)
         self.last_request_from_host[hostname] = datetime.now()
         response = requests.get(url)

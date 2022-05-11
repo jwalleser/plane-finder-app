@@ -36,18 +36,21 @@ class TestHTTPRequestHandler(SimpleHTTPRequestHandler):
 @pytest.fixture
 def listing_entry(listings_page):
     from planefinder import trade_a_plane as tap
+
     return next(listings_page.entries)
 
 
 @pytest.fixture
 def listings_page(multiple_listing_page):
     from planefinder import trade_a_plane as tap
+
     return tap.ListingsPage(multiple_listing_page)
 
 
 @pytest.fixture
 def listing_detail(test_detail_uri):
     from planefinder import trade_a_plane as tap
+
     return tap.ListingDetail(test_detail_uri)
 
 
@@ -64,6 +67,7 @@ def test_detail_uri() -> str:
 @pytest.fixture
 def page_getter():
     from planefinder.data import PageGetter
+
     return PageGetter()
 
 
