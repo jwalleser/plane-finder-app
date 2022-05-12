@@ -112,7 +112,7 @@ class Database:
             raise NotImplementedError("Not yet implemented")
 
     def _save_aircraft_entry(self, entry: AircraftSaleEntry) -> InsertOneResult:
-        return self.conn["AircraftSaleEntry"].insert_one(entry.__dict__).inserted_id
+        return self.conn["AircraftSaleEntry"].insert_one(entry.__dict__)
 
     @classmethod
     def mongodb(cls, db_name=MongoAtlas.db_name):

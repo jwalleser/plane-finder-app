@@ -4,12 +4,7 @@ import pytest
 import pymongo
 from pymongo.server_api import ServerApi
 
-# from planefinder.data import AircraftSaleEntry, Database, MongoAtlas, PageGetter
-# from planefinder import trade_a_plane
-# from planefinder.trade_a_plane import ListingsPage, ListingEntry
 from bs4 import BeautifulSoup
-
-# from planefinder.data import Database
 
 
 def test_aircraft_sale_entry():
@@ -135,6 +130,15 @@ def aircraft_sale_entry(listing_entry):
 def test_save_aircraft_sale_entry(aircraft_sale_entry, database):
     database.save(aircraft_sale_entry)
     database.delete(aircraft_sale_entry)
+
+def test_update_existing_aircraft_sale_entry(aircraft_sale_entry, database):
+    insert_result = database.save(aircraft_sale_entry)
+    UPDATED_PRICE = 199946
+    aircraft_sale_entry.price = UPDATED_PRICE
+    update_result = database.save_or_update(aircraft_sale_entry)
+    assert update_result.upserted_id == insert_result.inserted_id
+    retrieved_aircraft_sale = database.find_by_id(aircraft_sale_entry.id)
+    assert retrieved_aircraft_sale.price == UPDATED_PRICE
 
 
 @pytest.fixture
