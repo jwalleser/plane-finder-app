@@ -139,6 +139,7 @@ def test_update_existing_aircraft_sale_entry(aircraft_sale_entry, database):
     assert update_result.upserted_id == insert_result.inserted_id
     retrieved_aircraft_sale = database.find_by_id(aircraft_sale_entry.id)
     assert retrieved_aircraft_sale.price == UPDATED_PRICE
+    database.delete(aircraft_sale_entry)
 
 
 @pytest.fixture

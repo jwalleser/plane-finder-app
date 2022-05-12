@@ -103,6 +103,37 @@ class Database:
                 "I only know how to save AircraftSaleEntry objects"
             )
 
+    def save_or_update(self, object_):
+        if isinstance(object_, AircraftSaleEntry):
+            obj_dict = object_.__dict__
+            del obj_dict["_id"]
+            return self.conn["AircraftSaleEntry"].update_one(
+                {"id": object_.id},
+                {"$set": obj_dict},
+                upsert=True
+            )
+        else:
+            raise NotImplementedError(
+                "I only know how to save AircraftSaleEntry objects"
+            )
+
+    def find_by_id(self, id):
+        document = self.conn["AircraftSaleEntry"].find_one({"id": id})
+        return AircraftSaleEntry(
+            _id=document["_id"],
+            id=document["id"],
+            url=document["url"],
+            seller_id=document["seller_id"],
+            make_model=document["make_model"],
+            price=document["price"],
+            registration=document["registration"],
+            description=document["description"],
+            last_update=document["last_update"],
+            ttaf=document["ttaf"],
+            smoh=document["smoh"]
+        )
+        
+
     def delete(self, object_):
         if isinstance(object_, ObjectId):
             self.conn["AircraftSaleEntry"].delete_one({"_id": object_})
