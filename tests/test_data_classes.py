@@ -136,7 +136,7 @@ def test_update_existing_aircraft_sale_entry(aircraft_sale_entry, database):
     UPDATED_PRICE = 199946
     aircraft_sale_entry.price = UPDATED_PRICE
     update_result = database.save_or_update(aircraft_sale_entry)
-    assert update_result.upserted_id == insert_result.inserted_id
+    assert update_result.modified_count == 1
     retrieved_aircraft_sale = database.find_by_id(aircraft_sale_entry.id)
     assert retrieved_aircraft_sale.price == UPDATED_PRICE
     database.delete(aircraft_sale_entry)

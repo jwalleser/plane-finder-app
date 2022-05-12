@@ -119,8 +119,7 @@ class Database:
 
     def find_by_id(self, id):
         document = self.conn["AircraftSaleEntry"].find_one({"id": id})
-        return AircraftSaleEntry(
-            _id=document["_id"],
+        entry = AircraftSaleEntry(
             id=document["id"],
             url=document["url"],
             seller_id=document["seller_id"],
@@ -132,6 +131,8 @@ class Database:
             ttaf=document["ttaf"],
             smoh=document["smoh"]
         )
+        entry._id = document["_id"]
+        return entry
         
 
     def delete(self, object_):
