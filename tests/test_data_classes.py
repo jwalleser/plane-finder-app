@@ -84,7 +84,7 @@ Thanks for your interest.
 Aircraft Location: GYI"""
     expected_description = re.sub(r"[\n\r]+", "\n", expected_description)
     stripped_description = re.sub(r"[\n\r]+", "\n", trade_a_plane.description(soup))
-    assert  stripped_description == expected_description
+    assert stripped_description == expected_description
     assert trade_a_plane.ttaf(soup) == 3388
     assert trade_a_plane.engine_time(soup) == "271 SMOH"
 
@@ -134,6 +134,7 @@ def test_save_aircraft_sale_entry(aircraft_sale_entry, database):
 
 def test_update_existing_aircraft_sale_entry(aircraft_sale_entry, database):
     insert_result = database.save(aircraft_sale_entry)
+    assert insert_result.inserted_id
     UPDATED_PRICE = 199946
     aircraft_sale_entry.price = UPDATED_PRICE
     update_result = database.save_or_update(aircraft_sale_entry)
@@ -141,6 +142,7 @@ def test_update_existing_aircraft_sale_entry(aircraft_sale_entry, database):
     retrieved_aircraft_sale = database.find_by_id(aircraft_sale_entry.id)
     assert retrieved_aircraft_sale.price == UPDATED_PRICE
     database.delete(aircraft_sale_entry)
+    database.find_by_id(aircraft_sale_entry.id)
 
 
 @pytest.fixture
