@@ -1,10 +1,8 @@
-from pathlib import Path
 from datetime import datetime
+import re
 import pytest
 import pymongo
 from pymongo.server_api import ServerApi
-
-from bs4 import BeautifulSoup
 
 
 def test_aircraft_sale_entry():
@@ -84,7 +82,9 @@ Thanks for your interest.
 
 
 Aircraft Location: GYI"""
-    assert trade_a_plane.description(soup) == expected_description
+    expected_description = re.sub(r"[\n\r]+", "\n", expected_description)
+    stripped_description = re.sub(r"[\n\r]+", "\n", trade_a_plane.description(soup))
+    assert  stripped_description == expected_description
     assert trade_a_plane.ttaf(soup) == 3388
     assert trade_a_plane.engine_time(soup) == "271 SMOH"
 
@@ -130,6 +130,7 @@ def aircraft_sale_entry(listing_entry):
 def test_save_aircraft_sale_entry(aircraft_sale_entry, database):
     database.save(aircraft_sale_entry)
     database.delete(aircraft_sale_entry)
+
 
 def test_update_existing_aircraft_sale_entry(aircraft_sale_entry, database):
     insert_result = database.save(aircraft_sale_entry)

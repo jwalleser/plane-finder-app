@@ -108,9 +108,7 @@ class Database:
             obj_dict = object_.__dict__
             del obj_dict["_id"]
             return self.conn["AircraftSaleEntry"].update_one(
-                {"id": object_.id},
-                {"$set": obj_dict},
-                upsert=True
+                {"id": object_.id}, {"$set": obj_dict}, upsert=True
             )
         else:
             raise NotImplementedError(
@@ -129,11 +127,10 @@ class Database:
             description=document["description"],
             last_update=document["last_update"],
             ttaf=document["ttaf"],
-            smoh=document["smoh"]
+            smoh=document["smoh"],
         )
         entry._id = document["_id"]
         return entry
-        
 
     def delete(self, object_):
         if isinstance(object_, ObjectId):
