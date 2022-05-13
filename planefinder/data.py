@@ -121,7 +121,7 @@ class Database:
     def save_or_update(self, object_):
         if isinstance(object_, AircraftSaleEntry):
             obj_dict = object_.__dict__
-            del obj_dict["_id"]
+            obj_dict.pop("_id", None)
             return self.conn["AircraftSaleEntry"].update_one(
                 {"id": object_.id}, {"$set": obj_dict}, upsert=True
             )

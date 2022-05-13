@@ -29,10 +29,14 @@ class Crawler:
         log.info(f"Crawling, starting from {self.entry}")
         listings_page = tap.ListingsPage(self.entry)
         page_counter = 0
-        for page in listings_page:
+        while True:
             page_counter += 1
             log.info(f"Reading entries, page {page_counter}")
-            for entry in page.entries:
+            for entry in listings_page.entries:
                 aircraft_sale_entry = AircraftSaleEntry.from_listings_entry(entry)
                 log.info(f"Saving aircraft entry {aircraft_sale_entry.id}")
                 self.database.save(aircraft_sale_entry)
+            try:
+                listings_page = next(listings_page)
+            except StopIteration:
+                break
