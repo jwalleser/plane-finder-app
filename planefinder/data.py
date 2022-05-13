@@ -53,6 +53,21 @@ class AircraftSaleEntry:
             smoh=entry.detail.smoh,
         )
 
+    @classmethod
+    def EMPTY(cls):
+        return cls(
+            id=-1,
+            url="",
+            seller_id=-1,
+            make_model="",
+            price=-1,
+            registration="",
+            description="Empty sale entry",
+            last_update="",
+            ttaf=-1,
+            smoh=-1,
+        )
+
 
 class PageGetter:
     def __init__(self):
@@ -102,6 +117,38 @@ class Database:
             raise NotImplementedError(
                 "I only know how to save AircraftSaleEntry objects"
             )
+
+    def save_or_update(self, object_):
+        if isinstance(object_, AircraftSaleEntry):
+            obj_dict = object_.__dict__
+            del obj_dict["_id"]
+            return self.conn["AircraftSaleEntry"].update_one(
+                {"id": object_.id}, {"$set": obj_dict}, upsert=True
+            )
+        else:
+            raise NotImplementedError(
+                "I only know how to save AircraftSaleEntry objects"
+            )
+
+    def find_by_id(self, id) -> AircraftSaleEntry:
+        document = self.conn["AircraftSaleEntry"].find_one({"id": id})
+        if document is not None:
+            entry = AircraftSaleEntry(
+                id=document["id"],
+                url=document["url"],
+                seller_id=document["seller_id"],
+                make_model=document["make_model"],
+                price=document["price"],
+                registration=document["registration"],
+                description=document["description"],
+                last_update=document["last_update"],
+                ttaf=document["ttaf"],
+                smoh=document["smoh"],
+            )
+            entry._id = document["_id"]
+        else:
+            entry = AircraftSaleEntry.EMPTY()
+        return entry
 
     def delete(self, object_):
         if isinstance(object_, ObjectId):
