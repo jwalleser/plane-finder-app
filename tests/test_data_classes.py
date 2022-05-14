@@ -148,6 +148,6 @@ def test_update_existing_aircraft_sale_entry(aircraft_sale_entry, database):
 @pytest.fixture
 def database():
     from planefinder.data import Database
+    import planefinder.data
 
-    name = "test_plane_finder"
-    return Database.mongodb(name)
+    return Database.mongodb(planefinder.data.TEST_DATABASE_NAME)

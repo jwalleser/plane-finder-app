@@ -14,6 +14,9 @@ from planefinder.trade_a_plane import ListingEntry
 from planefinder import logging
 
 log = logging.get_logger(__name__)
+TEST_DATABASE_NAME = "planefinder_test"
+DEV_DATABASE_NAME = "planefinder_dev"
+PROD_DATABASE_NAME = "planefinder_prod"
 
 
 @attr.s
