@@ -14,5 +14,6 @@ def create_app(config_name: str):
 
     return app
 
-def attach_routes_and_error_pages(app):
-    pass
+def attach_routes_and_error_pages(app: Flask):
+    from planefinder.webapp import home
+    app.register_blueprint(home.bp)
