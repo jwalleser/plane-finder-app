@@ -1,5 +1,5 @@
 from flask import Flask
-from planefinder.webapp import config
+from planefinder.webapp.config import config
 
 
 def create_app(config_name: str):
