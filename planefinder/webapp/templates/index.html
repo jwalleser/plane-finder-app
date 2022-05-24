@@ -1,6 +1,41 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
     <body>
-        <p>Hello world!</p>
+        <!--
+            Sort by price.
+
+            Include columns:
+
+            Model
+            Year
+            TTAF
+            SMOH
+        -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Listing ID</th>
+                    <th>Year</th>
+                    <th>Model</th>
+                    <th>TTAF</th>
+                    <th>SMOH</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for listing in listings %}
+                    <tr>
+                        <td>{{listing.seller_id}}</td>
+                        <td>{{listing.year}}</td>
+                        <td>{{listing.make_model}}</td>
+                        <td>{{listing.ttaf}}</td>
+                        <td>{{listing.smoh}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </body>
 </html>
