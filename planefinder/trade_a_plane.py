@@ -101,6 +101,10 @@ class ListingDetail:
         return last_update(self.page_soup)
 
     @property
+    def model_year(self):
+        return model_year(self.page_soup)
+    
+    @property
     def make_model(self):
         return make_model(self.page_soup)
 
