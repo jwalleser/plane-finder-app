@@ -208,6 +208,20 @@ def detail_page_url(node: Tag) -> str:
     return description_node.find(name="a").attrs["href"]
 
 
+def model_year(node: Tag) -> int:
+    info_list = node.find(name="div", id="info-list-seller")
+    for li in info_list.find_all("li"):
+        text: str = li.text
+        tokens = text.split(":")
+        import pdb; pdb.set_trace()
+        if tokens[0].strip().lower() == "year":
+            try:
+                return int(tokens[1])
+            except:
+                continue
+    return int(1902)
+
+
 def make_model(node: Tag):
     """
     Get make and model from a node.

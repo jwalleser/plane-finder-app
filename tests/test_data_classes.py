@@ -53,6 +53,7 @@ def test_read_entry_from_html(page_getter):
     assert trade_a_plane.make_model(soup) == "CESSNA 182Q SKYLANE"
     assert trade_a_plane.price(soup) == 250000
     assert trade_a_plane.registration(soup) == "N7574S"
+    assert trade_a_plane.model_year(soup) == 1977
     expected_description = """*News Alert* High demand highly desirable Q model has hit the market!!! 
 
 
