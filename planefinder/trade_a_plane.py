@@ -217,7 +217,6 @@ def model_year(node: Tag) -> int:
     for li in info_list.find_all("li"):
         text: str = li.text
         tokens = text.split(":")
-        import pdb; pdb.set_trace()
         if tokens[0].strip().lower() == "year":
             try:
                 return int(tokens[1])
