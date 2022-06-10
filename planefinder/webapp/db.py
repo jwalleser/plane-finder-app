@@ -1,19 +1,21 @@
 from flask import g, current_app, Flask
 
-def get_db():
+from planefinder.data import Database
+
+def get_db() -> Database:
     if "db" not in g:
-        g.db = current_app.config.db
+        g.db = current_app.config["DB"]
     return g.db
 
-def close_db(e=None):
+def close_db(e=None) -> None:
     db = g.pop('db', None)
 
     if db is not None:
         db.close()
 
-def init_db():
+def init_db() -> None:
     pass
 
 
-def init_app(app: Flask):
+def init_app(app: Flask) -> None:
     app.teardown_appcontext(close_db)

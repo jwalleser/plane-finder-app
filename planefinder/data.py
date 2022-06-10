@@ -1,5 +1,7 @@
+from __future__ import annotations
 from datetime import datetime, timedelta
 import time
+from typing import Iterable, MutableMapping
 from urllib.parse import urlparse
 import attr
 from bs4 import BeautifulSoup
@@ -112,8 +114,12 @@ class MongoAtlas:
 class Database:
     def __init__(self):
         self.conn = None
+        self.db = None
 
-    def save(self, object_):
+    def close(self):
+        self.conn.close()
+
+    def save(self, object_) -> None:
         if isinstance(object_, AircraftSaleEntry):
             return self._save_aircraft_entry(object_)
         else:
@@ -125,7 +131,7 @@ class Database:
         if isinstance(object_, AircraftSaleEntry):
             obj_dict = object_.__dict__
             obj_dict.pop("_id", None)
-            return self.conn["AircraftSaleEntry"].update_one(
+            return self.db["AircraftSaleEntry"].update_one(
                 {"id": object_.id}, {"$set": obj_dict}, upsert=True
             )
         else:
@@ -134,9 +140,19 @@ class Database:
             )
 
     def find_by_id(self, id) -> AircraftSaleEntry:
-        document = self.conn["AircraftSaleEntry"].find_one({"id": id})
+        document = self.db["AircraftSaleEntry"].find_one({"id": id})
         if document is not None:
-            entry = AircraftSaleEntry(
+            entry = self._create_aircraft_sale_entry(document)
+        else:
+            entry = AircraftSaleEntry.EMPTY()
+        return entry
+
+    def get_all_listings(self) -> Iterable:
+        documents = self.db["AircraftSaleEntry"].find()
+        return [self._create_aircraft_sale_entry(document) for document in documents]
+
+    def _create_aircraft_sale_entry(self, document: MutableMapping) -> AircraftSaleEntry:
+        entry = AircraftSaleEntry(
                 id=document["id"],
                 url=document["url"],
                 seller_id=document["seller_id"],
@@ -148,31 +164,29 @@ class Database:
                 ttaf=document["ttaf"],
                 smoh=document["smoh"],
             )
-            entry._id = document["_id"]
-        else:
-            entry = AircraftSaleEntry.EMPTY()
+        entry._id = document["_id"]
         return entry
 
-    def delete(self, object_):
+    def delete(self, object_) -> None:
         if isinstance(object_, ObjectId):
-            self.conn["AircraftSaleEntry"].delete_one({"_id": object_})
+            self.db["AircraftSaleEntry"].delete_one({"_id": object_})
         elif isinstance(object_, AircraftSaleEntry):
-            self.conn["AircraftSaleEntry"].delete_one({"id": object_.id})
+            self.db["AircraftSaleEntry"].delete_one({"id": object_.id})
         else:
             raise NotImplementedError("Not yet implemented")
 
     def _save_aircraft_entry(self, entry: AircraftSaleEntry) -> InsertOneResult:
-        return self.conn["AircraftSaleEntry"].insert_one(entry.__dict__)
+        return self.db["AircraftSaleEntry"].insert_one(entry.__dict__)
 
     @classmethod
-    def mongodb(cls, db_name=MongoAtlas.db_name):
+    def mongodb(cls, db_name=MongoAtlas.db_name) -> Database:
         db_user = MongoAtlas.db_user
         password = MongoAtlas.password
-        client = pymongo.MongoClient(
+        client: pymongo.MongoClient = pymongo.MongoClient(
             f"mongodb+srv://{db_user}:{password}@flydb.c4yh8.mongodb.net/{db_name}?retryWrites=true&w=majority",
             server_api=ServerApi("1"),
         )
-        db = client[db_name]
         instance = cls()
-        instance.conn = db
+        instance.conn = client
+        instance.db = client[db_name]
         return instance
