@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import time
 from typing import Iterable, MutableMapping
 from urllib.parse import urlparse
+import pandas as pd
 import attr
 from bs4 import BeautifulSoup
 import requests
@@ -58,6 +59,24 @@ class AircraftSaleEntry:
             smoh=entry.detail.smoh,
         )
 
+    @staticmethod
+    def from_dataframe(df: pd.DataFrame) -> Iterable[AircraftSaleEntry]:
+        entries = []
+        for row in df.itertuples():
+            entry = AircraftSaleEntry(
+                id=row.id,
+                url=row.url,
+                seller_id=row.seller_id,
+                make_model=row.make_model,
+                price=row.price,
+                registration=row.registration,
+                description=row.description,
+                last_update=row.last_update,
+                ttaf=row.ttaf,
+                smoh=row.smoh
+            )
+            entries.append(entry)
+        return entries
     @classmethod
     def EMPTY(cls):
         return cls(

@@ -1,5 +1,8 @@
 import os
 from collections.abc import MutableMapping
+from typing import Type
+
+from flask import Flask
 from planefinder.data import Database
 import planefinder.data
 
@@ -24,12 +27,16 @@ class TestingConfig(Config):
     TESTING = True
     DB: planefinder.data.Database = Database.mongodb(planefinder.data.TEST_DATABASE_NAME)
 
+    @staticmethod
+    def init_app(app: Flask):
+        pass
+
 
 class ProductionConfig(Config):
     DB: planefinder.data.Database = Database.mongodb(planefinder.data.PROD_DATABASE_NAME)
 
 
-config: MutableMapping[str, type] = {
+config: MutableMapping[str, Type] = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
     "production": ProductionConfig,

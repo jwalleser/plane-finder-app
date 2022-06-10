@@ -4,3 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 log_cli = true
+
+[mypy]
+python_version = 3.9
