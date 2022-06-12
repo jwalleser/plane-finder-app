@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime, timedelta
 import time
-from typing import Iterable, MutableMapping
+from typing import Collection, MutableMapping, Union
 from urllib.parse import urlparse
 import pandas as pd
 import attr
@@ -18,7 +18,7 @@ from planefinder import logging
 
 log = logging.get_logger(__name__)
 TEST_DATABASE_NAME = "planefinder_test"
-DEV_DATABASE_NAME = "planefinder_dev"
+DEV_DATABASE_NAME = "planefinder_test_crawl"
 PROD_DATABASE_NAME = "planefinder_prod"
 
 
@@ -60,7 +60,7 @@ class AircraftSaleEntry:
         )
 
     @staticmethod
-    def from_dataframe(df: pd.DataFrame) -> Iterable[AircraftSaleEntry]:
+    def from_dataframe(df: pd.DataFrame) -> Collection[AircraftSaleEntry]:
         entries = []
         for row in df.itertuples():
             entry = AircraftSaleEntry(
@@ -166,7 +166,7 @@ class Database:
             entry = AircraftSaleEntry.EMPTY()
         return entry
 
-    def get_all_listings(self) -> Iterable:
+    def get_all_listings(self) -> Collection:
         documents = self.db["AircraftSaleEntry"].find()
         return [self._create_aircraft_sale_entry(document) for document in documents]
 
@@ -186,13 +186,13 @@ class Database:
         entry._id = document["_id"]
         return entry
 
-    def delete(self, object_) -> None:
+    def delete(self, object_: Union[ObjectId, AircraftSaleEntry]) -> None:
         if isinstance(object_, ObjectId):
             self.db["AircraftSaleEntry"].delete_one({"_id": object_})
         elif isinstance(object_, AircraftSaleEntry):
             self.db["AircraftSaleEntry"].delete_one({"id": object_.id})
         else:
-            raise NotImplementedError("Not yet implemented")
+            raise ValueError("argument must be a pymongo.ObjectId or AircraftSaleEntry")
 
     def _save_aircraft_entry(self, entry: AircraftSaleEntry) -> InsertOneResult:
         return self.db["AircraftSaleEntry"].insert_one(entry.__dict__)
