@@ -23,6 +23,7 @@
                     <th>Model</th>
                     <th>TTAF</th>
                     <th>SMOH</th>
+                    <th>Price</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,7 @@
                         <td>{{listing.make_model}}</td>
                         <td>{{listing.ttaf}}</td>
                         <td>{{listing.smoh}}</td>
+                        <td>{{"{:0.2f}".format(listing.price)}}</td>
                     </tr>
                 {% endfor %}
             </tbody>

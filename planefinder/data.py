@@ -37,6 +37,7 @@ class AircraftSaleEntry:
     url: str = attr.ib()
     seller_id: int = attr.ib()
     make_model: str = attr.ib()
+    year: int = attr.ib()
     price: float = attr.ib()
     registration: str = attr.ib()
     description: str = attr.ib()
@@ -51,6 +52,7 @@ class AircraftSaleEntry:
             url=entry.listings_page.url,
             seller_id=entry.seller,
             make_model=entry.detail.make_model,
+            year=entry.detail.model_year,
             price=entry.detail.price,
             registration=entry.detail.registration,
             description=entry.detail.description,
@@ -68,6 +70,7 @@ class AircraftSaleEntry:
                 url=row.url,
                 seller_id=row.seller_id,
                 make_model=row.make_model,
+                year=row.year,
                 price=row.price,
                 registration=row.registration,
                 description=row.description,
@@ -84,6 +87,7 @@ class AircraftSaleEntry:
             url="",
             seller_id=-1,
             make_model="",
+            year=1903,
             price=-1,
             registration="",
             description="Empty sale entry",
@@ -176,6 +180,7 @@ class Database:
                 url=document["url"],
                 seller_id=document["seller_id"],
                 make_model=document["make_model"],
+                year=document.get("year", None),
                 price=document["price"],
                 registration=document["registration"],
                 description=document["description"],

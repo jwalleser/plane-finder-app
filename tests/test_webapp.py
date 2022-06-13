@@ -43,6 +43,7 @@ def aircraft_sales_entries() -> Collection[AircraftSaleEntry]:
 @pytest.fixture
 def setup_database(app: Flask, aircraft_sales_entries: Iterable[AircraftSaleEntry]):
     with app.app_context():
+        clear_aircraft_sales_entries(app)
         for entry in aircraft_sales_entries:
             db.get_db().save(entry)
     yield None
@@ -50,3 +51,8 @@ def setup_database(app: Flask, aircraft_sales_entries: Iterable[AircraftSaleEntr
     with app.app_context():
         for entry in aircraft_sales_entries:
             db.get_db().delete(entry)
+
+def clear_aircraft_sales_entries(app: Flask):
+    with app.app_context():
+        db.get_db().db["AircraftSaleEntry"].delete_many({})
+        
