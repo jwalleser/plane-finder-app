@@ -297,7 +297,15 @@ def description(node: Tag) -> str:
     text: str
         Text as provided by seller
     """
-    return node.find(id="detailed_desc").find(itemprop="description").text
+    if node is None:
+        return ""
+    desc_node = node.find(id="detailed_desc")
+    if desc_node is None:
+        return ""
+    desc_node = desc_node.find(itemprop="description")
+    if desc_node is None:
+        return ""
+    return desc_node.text
 
 
 def ttaf(node: Tag):
