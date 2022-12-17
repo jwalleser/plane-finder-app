@@ -49,7 +49,7 @@ class AircraftSaleEntry:
     def from_listings_entry(cls, entry: ListingEntry):
         return cls(
             id=entry.id,
-            url=entry.listings_page.url,
+            url=entry.detail_url,
             seller_id=entry.seller,
             make_model=entry.detail.make_model,
             year=entry.detail.model_year,
@@ -171,7 +171,7 @@ class Database:
         return entry
 
     def get_all_listings(self) -> Collection:
-        documents = self.db["AircraftSaleEntry"].find()
+        documents = self.db["AircraftSaleEntry"].find().sort("last_update", -1)
         return [self._create_aircraft_sale_entry(document) for document in documents]
 
     def _create_aircraft_sale_entry(self, document: MutableMapping) -> AircraftSaleEntry:

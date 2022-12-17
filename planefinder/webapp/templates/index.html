@@ -19,22 +19,26 @@
             <thead>
                 <tr>
                     <th>Listing ID</th>
+                    <th>Registration</th>
                     <th>Year</th>
                     <th>Model</th>
                     <th>TTAF</th>
                     <th>SMOH</th>
                     <th>Price</th>
+                    <th>Last Updated</th>
                 </tr>
             </thead>
             <tbody>
                 {% for listing in listings %}
                     <tr>
-                        <td>{{listing.seller_id}}</td>
+                        <td>{{listing.id}}</td>
+                        <td>{{listing.registration}}</td>
                         <td>{{listing.year}}</td>
-                        <td>{{listing.make_model}}</td>
+                        <td><a href="{{listing.url}}">{{listing.make_model}}</a></td>
                         <td>{{listing.ttaf}}</td>
                         <td>{{listing.smoh}}</td>
                         <td>{{"{:0.2f}".format(listing.price)}}</td>
+                        <td>{{listing.last_update}}</td>
                     </tr>
                 {% endfor %}
             </tbody>
