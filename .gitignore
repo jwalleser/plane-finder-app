@@ -4,3 +4,8 @@
 .pytest_cache
 tests/**/*.log
 *.log
+venv/
+instance/
+dist/
+build/
+*.egg-info
