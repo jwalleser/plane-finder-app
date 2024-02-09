@@ -4,8 +4,9 @@
 .pytest_cache
 tests/**/*.log
 *.log
-venv/
+.venv/
 instance/
 dist/
 build/
 *.egg-info
+.vscode

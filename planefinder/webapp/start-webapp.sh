@@ -1,0 +1,1 @@
+flask --app '.:create_app("development")' run
