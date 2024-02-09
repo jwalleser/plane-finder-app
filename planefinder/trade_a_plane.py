@@ -103,7 +103,7 @@ class ListingDetail:
     @property
     def model_year(self):
         return model_year(self.page_soup)
-    
+
     @property
     def make_model(self):
         return make_model(self.page_soup)
@@ -144,7 +144,7 @@ def next_page_url(node):
 def is_listing_result(tag: Tag):
     """
     True if the node is a result listing.
-    
+
     Result listings are <div> tags with `class="result_listing"
     """
     if not tag.name == "div":
@@ -291,7 +291,7 @@ def description(node: Tag) -> str:
     node: Tag
         Detail page containing an element with id="detailed_desc" which
         contains another tag with itemprop="description"
-    
+
     Returns
     -------
     text: str
@@ -359,7 +359,7 @@ def _general_specs(node: Tag) -> List[str]:
     ----------
     node: Tag
         Detail page containing <div id='general_specs'>
-    
+
     Returns
     -------
     general_specs: List[Tag]

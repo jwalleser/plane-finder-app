@@ -1,7 +1,7 @@
 class MyIterable:
     """
     An iterator that returns an updated state of itself.
-    
+
     In this case, it is a counter. In the `Planefinder` application,
     the `ListingPage` class does this. It updates its URL and page
     data.

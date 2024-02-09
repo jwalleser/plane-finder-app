@@ -25,7 +25,9 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    DB: planefinder.data.Database = Database.mongodb(planefinder.data.TEST_DATABASE_NAME)
+    DB: planefinder.data.Database = Database.mongodb(
+        planefinder.data.TEST_DATABASE_NAME
+    )
 
     @staticmethod
     def init_app(app: Flask):
@@ -33,7 +35,9 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
-    DB: planefinder.data.Database = Database.mongodb(planefinder.data.PROD_DATABASE_NAME)
+    DB: planefinder.data.Database = Database.mongodb(
+        planefinder.data.PROD_DATABASE_NAME
+    )
 
 
 config: MutableMapping[str, Type] = {

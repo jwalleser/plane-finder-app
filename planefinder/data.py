@@ -26,7 +26,7 @@ PROD_DATABASE_NAME = "planefinder_prod"
 class AircraftSaleEntry:
     """
     A data class for aircraft sale information
-    
+
     This is the main type of obejct that I wish to collect. I want to index
     aircraft sales entries. I want to record what is for sale, when, and for
     how much.
@@ -76,10 +76,11 @@ class AircraftSaleEntry:
                 description=row.description,
                 last_update=row.last_update,
                 ttaf=row.ttaf,
-                smoh=row.smoh
+                smoh=row.smoh,
             )
             entries.append(entry)
         return entries
+
     @classmethod
     def EMPTY(cls):
         return cls(
@@ -174,20 +175,22 @@ class Database:
         documents = self.db["AircraftSaleEntry"].find().sort("last_update", -1)
         return [self._create_aircraft_sale_entry(document) for document in documents]
 
-    def _create_aircraft_sale_entry(self, document: MutableMapping) -> AircraftSaleEntry:
+    def _create_aircraft_sale_entry(
+        self, document: MutableMapping
+    ) -> AircraftSaleEntry:
         entry = AircraftSaleEntry(
-                id=document["id"],
-                url=document["url"],
-                seller_id=document["seller_id"],
-                make_model=document["make_model"],
-                year=document.get("year", None),
-                price=document["price"],
-                registration=document["registration"],
-                description=document["description"],
-                last_update=document["last_update"],
-                ttaf=document["ttaf"],
-                smoh=document["smoh"],
-            )
+            id=document["id"],
+            url=document["url"],
+            seller_id=document["seller_id"],
+            make_model=document["make_model"],
+            year=document.get("year", None),
+            price=document["price"],
+            registration=document["registration"],
+            description=document["description"],
+            last_update=document["last_update"],
+            ttaf=document["ttaf"],
+            smoh=document["smoh"],
+        )
         entry._id = document["_id"]
         return entry
 

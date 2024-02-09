@@ -5,7 +5,9 @@ from urllib.parse import urlparse, urljoin
 # from planefinder.data import Database, PageGetter
 
 
-def test_navigation_from_multiple_listing_page_to_detail_page(listings_page,):
+def test_navigation_from_multiple_listing_page_to_detail_page(
+    listings_page,
+):
     first_listing = next(listings_page.entries)
     assert first_listing
     known_listing_id = "2403772"
