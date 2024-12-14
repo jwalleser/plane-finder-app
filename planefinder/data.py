@@ -102,6 +102,15 @@ class PageGetter:
     def __init__(self):
         self.last_request_from_host = {}
         self.min_request_interval_in_seconds = 2
+        self.session = requests.Session()
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Referer': 'https://www.trade-a-plane.com',
+        }
 
     @cached(cache=TTLCache(100, ttl=86400))
     def get(self, url) -> str:
@@ -117,9 +126,12 @@ class PageGetter:
             ):
                 time.sleep(self.min_request_interval_in_seconds)
         self.last_request_from_host[hostname] = datetime.now()
-        response = requests.get(url)
+        response = self.session.get(url, headers=self.headers)
         if response.status_code == 429:
             log.warning(f"Too many requests too fast to {hostname}: {response.headers}")
+            raise Exception("Could not get page data")
+        elif response.status_code == 403:
+            log.warning(f"Access denied to {hostname}: {response.headers}")
             raise Exception("Could not get page data")
         return response.text
 
