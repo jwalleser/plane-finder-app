@@ -1,3 +1,8 @@
+"""
+This module contains the Crawler class that is responsible for crawling a
+Trade-a-Plane and saving the data to a database.
+"""
+
 import attr
 from planefinder import trade_a_plane as tap
 from planefinder import logging
@@ -40,3 +45,21 @@ class Crawler:
                 listings_page = next(listings_page)
             except StopIteration:
                 break
+
+
+def crawl_trade_a_plane():
+    """
+    Crawl Trade-a-Plane for Cessna 182 aircraft.
+
+    Save data to the 'planefinder' database.
+    """
+    cessna_182_trade_a_plane = "https://www.trade-a-plane.com/search?category_level1=Single+Engine+Piston&make=CESSNA&model_group=CESSNA+182+SERIES&s-type=aircraft"
+    database = Database.mongodb("planefinder")
+    crawler = Crawler(cessna_182_trade_a_plane, database)
+    crawler.crawl()
+
+
+if __name__ == "__main__":
+    log.setLevel(logging.INFO)
+    log.info("Starting Trade-a-Plane crawler")
+    crawl_trade_a_plane()
