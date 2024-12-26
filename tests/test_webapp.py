@@ -51,11 +51,10 @@ def setup_database(app: Flask, aircraft_sales_entries: Iterable[AircraftSaleEntr
         clear_aircraft_sales_entries(app)
         for entry in aircraft_sales_entries:
             db.get_db().save(entry)
-    yield None
+    yield
 
     with app.app_context():
-        for entry in aircraft_sales_entries:
-            db.get_db().delete(entry)
+        clear_aircraft_sales_entries(app)
 
 
 def clear_aircraft_sales_entries(app: Flask):
