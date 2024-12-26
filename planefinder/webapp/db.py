@@ -1,6 +1,7 @@
 from flask import g, current_app, Flask
 
 from planefinder.data import Database
+from planefinder import logging
 
 
 def get_db() -> Database:
@@ -11,9 +12,14 @@ def get_db() -> Database:
 
 def close_db(e=None) -> None:
     db = g.pop("db", None)
+    log = logging.get_logger(__name__)
+    log.debug(f"Closing db: {db}")
 
     if db is not None:
-        db.close()
+        # db.close()
+        # TODO: I really do want to be able to
+        # close the database, but this statement seems to break the app.
+        pass
 
 
 def init_db() -> None:
