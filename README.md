@@ -10,3 +10,5 @@ To install locally use: `python -m pip install -e .` from the root directory.
    awkward to run a pytest to do work.
 
 2. Copy test database to production database.
+
+3. Implement some kind of progress meter when crawling.
