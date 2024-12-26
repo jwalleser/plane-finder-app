@@ -20,7 +20,7 @@ from planefinder import logging
 log = logging.get_logger(__name__)
 TEST_DATABASE_NAME = "planefinder_test"
 DEV_DATABASE_NAME = "planefinder_test_crawl"
-PROD_DATABASE_NAME = "planefinder_prod"
+PROD_DATABASE_NAME = "planefinder"
 
 
 @attr.s
@@ -105,12 +105,12 @@ class PageGetter:
         self.min_request_interval_in_seconds = 2
         self.session = requests.Session()
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Referer': 'https://www.trade-a-plane.com',
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Referer": "https://www.trade-a-plane.com",
         }
 
     @cached(cache=TTLCache(100, ttl=86400))
@@ -148,7 +148,9 @@ class MongoAtlas:
     db_name: str = "planefinder"
     db_user: str = "plane-finder-app"
     host: str = "flydb.c4yh8.mongodb.net"
-    url: str = f"mongodb+srv://{db_user}:{password}@{host}/{db_name}?retryWrites=true&w=majority"
+    url: str = (
+        f"mongodb+srv://{db_user}:{password}@{host}/{db_name}?retryWrites=true&w=majority"
+    )
 
 
 class Database:
