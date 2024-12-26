@@ -12,6 +12,7 @@ from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 from pymongo.results import InsertOneResult
 from cachetools import cached, TTLCache
+from dataclasses import dataclass
 
 from planefinder.trade_a_plane import ListingEntry
 from planefinder import logging
@@ -141,10 +142,13 @@ class PageGetter:
         return soup
 
 
+@dataclass
 class MongoAtlas:
-    password = "NHMe4roVZcNRmsaQ"
-    db_name = "planefinder"
-    db_user = "plane-finder-app"
+    password: str = "NHMe4roVZcNRmsaQ"
+    db_name: str = "planefinder"
+    db_user: str = "plane-finder-app"
+    host: str = "flydb.c4yh8.mongodb.net"
+    url: str = f"mongodb+srv://{db_user}:{password}@{host}/{db_name}?retryWrites=true&w=majority"
 
 
 class Database:
@@ -183,9 +187,16 @@ class Database:
             entry = AircraftSaleEntry.EMPTY()
         return entry
 
-    def get_all_listings(self) -> Collection:
+    def get_all_listings(self) -> Collection["AircraftSaleEntry"]:
         documents = self.db["AircraftSaleEntry"].find().sort("last_update", -1)
         return [self._create_aircraft_sale_entry(document) for document in documents]
+
+    def get_all_listings_as_dataframe(self) -> pd.DataFrame:
+        documents = self.db["AircraftSaleEntry"].find().sort("last_update", -1)
+        entries = [self._create_aircraft_sale_entry(document) for document in documents]
+        data = [entry.__dict__ for entry in entries]
+        df = pd.DataFrame(data)
+        return df
 
     def _create_aircraft_sale_entry(
         self, document: MutableMapping
