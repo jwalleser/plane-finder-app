@@ -107,7 +107,8 @@ class PageGetter:
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
             "Accept-Language": "en-US,en;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
+            # "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Encoding": "identity",
             "Connection": "keep-alive",
             "Upgrade-Insecure-Requests": "1",
             "Referer": "https://www.trade-a-plane.com",
@@ -180,6 +181,26 @@ class Database:
             raise NotImplementedError(
                 "I only know how to save AircraftSaleEntry objects"
             )
+        
+    def bulk_save_or_update(self, objects):
+        operations = []
+        for obj in objects:
+            obj_dict = obj.__dict__
+            obj_dict.pop("_id", None)
+            operation = pymongo.UpdateOne(
+                {"id": obj.id},
+                {"$set": obj_dict},
+                upsert=True
+            )
+            operations.append(operation)
+        
+        results = self.db["AircraftSaleEntry"].bulk_write(operations)
+        log.info(f"Write OK: {results.acknowledged}")
+        log.info(f"Inserted {results.inserted_count} documents")
+        log.info(f"Matched {results.matched_count} documents")
+        log.info(f"Modified {results.modified_count} documents")
+        log.info(f"Updated {results.upserted_count} documents")
+        return results
 
     def find_by_id(self, id) -> AircraftSaleEntry:
         document = self.db["AircraftSaleEntry"].find_one({"id": id})
