@@ -3,12 +3,14 @@ This module contains the Crawler class that is responsible for crawling a
 Trade-a-Plane and saving the data to a database.
 """
 
+import logging
 import attr
 from planefinder import trade_a_plane as tap
-from planefinder import logging
+import planefinder.logging
 from planefinder.data import AircraftSaleEntry, Database
+from tqdm import tqdm
 
-log = logging.get_logger(__name__)
+log = planefinder.logging.get_logger(__name__)
 
 
 @attr.s
@@ -32,19 +34,32 @@ class Crawler:
 
     def crawl(self):
         log.info(f"Crawling, starting from {self.entry}")
+        # Expecting a Trade-a-Plane URL for listings
+        # Collect all listing URLs first (breadth-first)
+        all_entries = []
         listings_page = tap.ListingsPage(self.entry)
-        page_counter = 0
-        while True:
-            page_counter += 1
-            log.info(f"Reading entries, page {page_counter}")
-            for entry in listings_page.entries:
-                aircraft_sale_entry = AircraftSaleEntry.from_listings_entry(entry)
-                log.info(f"Saving aircraft entry {aircraft_sale_entry.id}")
-                self.database.save(aircraft_sale_entry)
-            try:
-                listings_page = next(listings_page)
-            except StopIteration:
-                break
+        with tqdm(desc="Paging through listings") as progress_bar:
+            while True:
+                page_entries = list(listings_page.entries)
+                all_entries.extend(page_entries)
+                progress_bar.update(len(page_entries))
+                try:
+                    listings_page = next(listings_page)
+                except StopIteration:
+                    break
+
+        # Initialize progress bar
+        total_listings = len(all_entries)
+        progress_bar = tqdm(total=total_listings, desc="Crawling listings")
+
+        # Process each listing URL (depth-first)
+        for entry in all_entries:
+            aircraft_sale_entry = AircraftSaleEntry.from_listings_entry(entry)
+            log.info(f"Saving aircraft entry {aircraft_sale_entry.id}")
+            self.database.save(aircraft_sale_entry)
+            progress_bar.update(1)
+
+        progress_bar.close()
 
 
 def crawl_trade_a_plane():
