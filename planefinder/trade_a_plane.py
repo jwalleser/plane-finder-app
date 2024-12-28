@@ -29,6 +29,10 @@ class TAPPageGetter:
 
 
 class ListingsPage:
+    """
+    Contains a list of entries with summaries from a Trade-a-Plane listing page.
+    """
+    
     def __init__(self, listing_page_url: str):
         self._page_getter = TAPPageGetter.get_instance()
         self.url = listing_page_url
@@ -84,9 +88,15 @@ class ListingEntry:
 
 class ListingDetail:
     def __init__(self, url):
-        page_getter = TAPPageGetter.get_instance()
+        self.page_getter = TAPPageGetter.get_instance()
         self.url = url
-        self.page_soup = page_getter.get_soup(self.url)
+        self._page_soup = None
+
+    @property
+    def page_soup(self):
+        if self._page_soup is None:
+            self._page_soup = self.page_getter.get_soup(self.url)
+        return self._page_soup
 
     @property
     def listing_id(self, url):
