@@ -32,7 +32,7 @@ class Crawler:
         """
         self.entry = url
 
-    def crawl(self):
+    def crawl(self, max_iterations=None):
         log.info(f"Crawling, starting from {self.entry}")
         # Expecting a Trade-a-Plane URL for listings
         # Collect all listing URLs first (breadth-first)
@@ -43,6 +43,7 @@ class Crawler:
                 page_entries = list(listings_page.entries)
                 all_entries.extend(page_entries)
                 progress_bar.update(len(page_entries))
+
                 try:
                     listings_page = next(listings_page)
                 except StopIteration:
@@ -51,18 +52,22 @@ class Crawler:
         # Initialize progress bar
         total_listings = len(all_entries)
         progress_bar = tqdm(total=total_listings, desc="Crawling listings")
-
+        iteration_count = 0
         # Process each listing URL (depth-first)
         for entry in all_entries:
+
             aircraft_sale_entry = AircraftSaleEntry.from_listings_entry(entry)
             log.info(f"Saving aircraft entry {aircraft_sale_entry.id}")
             self.database.save(aircraft_sale_entry)
+            iteration_count += 1
+            if max_iterations and iteration_count >= max_iterations:
+                log.info(f"Reached max iterations: {max_iterations}")
+                break
             progress_bar.update(1)
-
         progress_bar.close()
 
 
-def crawl_trade_a_plane():
+def crawl_trade_a_plane(max_iterations=None):
     """
     Crawl Trade-a-Plane for Cessna 182 aircraft.
 
@@ -71,10 +76,10 @@ def crawl_trade_a_plane():
     cessna_182_trade_a_plane = "https://www.trade-a-plane.com/search?category_level1=Single+Engine+Piston&make=CESSNA&model_group=CESSNA+182+SERIES&s-type=aircraft"
     database = Database.mongodb("planefinder")
     crawler = Crawler(cessna_182_trade_a_plane, database)
-    crawler.crawl()
+    crawler.crawl(max_iterations=max_iterations)
 
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)
     log.info("Starting Trade-a-Plane crawler")
-    crawl_trade_a_plane()
+    crawl_trade_a_plane(max_iterations=None)

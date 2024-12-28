@@ -65,4 +65,4 @@ def test_crawl_webpage_from_entry_url():
     cessna_182_trade_a_plane = "https://www.trade-a-plane.com/search?category_level1=Single+Engine+Piston&make=CESSNA&model_group=CESSNA+182+SERIES&s-type=aircraft"
     test_database = Database.mongodb("planefinder_test_crawl")
     crawler = Crawler(cessna_182_trade_a_plane, test_database)
-    crawler.crawl()
+    crawler.crawl(max_iterations=2)
