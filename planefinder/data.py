@@ -181,19 +181,17 @@ class Database:
             raise NotImplementedError(
                 "I only know how to save AircraftSaleEntry objects"
             )
-        
+
     def bulk_save_or_update(self, objects):
         operations = []
         for obj in objects:
             obj_dict = obj.__dict__
             obj_dict.pop("_id", None)
             operation = pymongo.UpdateOne(
-                {"id": obj.id},
-                {"$set": obj_dict},
-                upsert=True
+                {"id": obj.id}, {"$set": obj_dict}, upsert=True
             )
             operations.append(operation)
-        
+
         results = self.db["AircraftSaleEntry"].bulk_write(operations)
         log.info(f"Write OK: {results.acknowledged}")
         log.info(f"Inserted {results.inserted_count} documents")
