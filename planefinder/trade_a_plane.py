@@ -32,7 +32,7 @@ class ListingsPage:
     """
     Contains a list of entries with summaries from a Trade-a-Plane listing page.
     """
-    
+
     def __init__(self, listing_page_url: str):
         self._page_getter = TAPPageGetter.get_instance()
         self.url = listing_page_url

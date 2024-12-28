@@ -5,6 +5,7 @@ Copy database from one database to another
 import logging
 from planefinder.data import Database
 
+
 def copy_database(source, destination):
     """
     Copy the database from one database to another.
@@ -12,6 +13,7 @@ def copy_database(source, destination):
     listings = source.get_all_listings()
     result = destination.bulk_save_or_update(listings)
     return result
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
